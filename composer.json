@@ -1,0 +1,29 @@
+{
+  "name": "ondewo/s2t-client-php",
+  "description": "ONDEWO S2T (Speech-to-Text) gRPC client for PHP, generated from the ondewo-s2t-api protocol buffer definitions",
+  "type": "library",
+  "keywords": ["ondewo", "s2t", "grpc", "protobuf", "client"],
+  "homepage": "https://github.com/ondewo/ondewo-s2t-client-php",
+  "license": "Apache-2.0",
+  "authors": [
+    {
+      "name": "ONDEWO GmbH",
+      "email": "office@ondewo.com",
+      "homepage": "https://www.ondewo.com"
+    }
+  ],
+  "support": {
+    "issues": "https://github.com/ondewo/ondewo-s2t-client-php/issues",
+    "source": "https://github.com/ondewo/ondewo-s2t-client-php"
+  },
+  "require": {
+    "php": ">=8.1.0"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^10.5 || ^11.5"
+  },
+  "autoload": {
+    "classmap": ["src/"]
+  },
+  "version": "1.0.0"
+}
