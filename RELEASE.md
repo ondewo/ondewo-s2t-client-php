@@ -9,7 +9,7 @@
 * Initial release of the ONDEWO S2T (Speech-to-Text) gRPC client for PHP. The whole client surface
   is generated from the [ondewo-s2t-api](https://github.com/ondewo/ondewo-s2t-api) protocol buffer definitions by the
   `ondewo-php-proto-compiler` image of
-  [ondewo-proto-compiler 5.15.0](https://github.com/ondewo/ondewo-proto-compiler/releases/tag/5.15.0),
+  [ondewo-proto-compiler 5.15.1](https://github.com/ondewo/ondewo-proto-compiler/releases/tag/5.15.1),
   which is vendored as a git submodule and pinned to that tag: protoc's built-in `--php_out` for the messages
   and enums, `grpc_php_plugin` for the `<Service>Client` stubs, and a composer package whose optimized
   classmap autoloader is built and verified inside the image.
