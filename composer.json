@@ -2,7 +2,13 @@
   "name": "ondewo/s2t-client-php",
   "description": "ONDEWO S2T (Speech-to-Text) gRPC client for PHP, generated from the ondewo-s2t-api protocol buffer definitions",
   "type": "library",
-  "keywords": ["ondewo", "s2t", "grpc", "protobuf", "client"],
+  "keywords": [
+    "ondewo",
+    "s2t",
+    "grpc",
+    "protobuf",
+    "client"
+  ],
   "homepage": "https://github.com/ondewo/ondewo-s2t-client-php",
   "license": "Apache-2.0",
   "authors": [
@@ -26,7 +32,10 @@
     "psr/log": "To receive ClientConfig's insecure-channel warning on a PSR-3 logger instead of error_log()"
   },
   "autoload": {
-    "classmap": ["src/"],
+    "classmap": [
+      "auth/",
+      "src/"
+    ],
     "psr-4": {
       "Ondewo\\S2t\\Auth\\": "auth/"
     }
