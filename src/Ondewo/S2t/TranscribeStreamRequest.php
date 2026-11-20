@@ -80,9 +80,9 @@ class TranscribeStreamRequest extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setAudioChunk($var)
+    public function setAudioChunk(string $var)
     {
-        GPBUtil::checkString($var, False);
+        GPBUtil::checkString($var, false);
         $this->audio_chunk = $var;
 
         return $this;
@@ -106,9 +106,8 @@ class TranscribeStreamRequest extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setEndOfStream($var)
+    public function setEndOfStream(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->end_of_stream = $var;
 
         return $this;
@@ -142,9 +141,8 @@ class TranscribeStreamRequest extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\TranscribeRequestConfig $var
      * @return $this
      */
-    public function setConfig($var)
+    public function setConfig(\Ondewo\S2t\TranscribeRequestConfig|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\TranscribeRequestConfig::class);
         $this->config = $var;
 
         return $this;
@@ -168,9 +166,8 @@ class TranscribeStreamRequest extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setMuteAudio($var)
+    public function setMuteAudio(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->mute_audio = $var;
 
         return $this;

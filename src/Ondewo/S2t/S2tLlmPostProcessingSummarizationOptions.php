@@ -90,9 +90,8 @@ class S2tLlmPostProcessingSummarizationOptions extends \Google\Protobuf\Internal
      * @param bool $var
      * @return $this
      */
-    public function setActive($var)
+    public function setActive(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->active = $var;
 
         return $this;
@@ -126,9 +125,9 @@ class S2tLlmPostProcessingSummarizationOptions extends \Google\Protobuf\Internal
      * @param string $var
      * @return $this
      */
-    public function setPrompt($var)
+    public function setPrompt(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->prompt = $var;
 
         return $this;
@@ -162,7 +161,7 @@ class S2tLlmPostProcessingSummarizationOptions extends \Google\Protobuf\Internal
      * @param int $var
      * @return $this
      */
-    public function setMinChars($var)
+    public function setMinChars(int $var)
     {
         GPBUtil::checkInt32($var);
         $this->min_chars = $var;
@@ -198,7 +197,7 @@ class S2tLlmPostProcessingSummarizationOptions extends \Google\Protobuf\Internal
      * @param int $var
      * @return $this
      */
-    public function setMaxChars($var)
+    public function setMaxChars(int $var)
     {
         GPBUtil::checkInt32($var);
         $this->max_chars = $var;

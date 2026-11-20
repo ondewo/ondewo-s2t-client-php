@@ -1,0 +1,51 @@
+# Tool image for every target that needs php, composer or gh: the test suite, the Packagist dry run
+# and publish, the GitHub token check and the GitHub release. With it the release host needs only
+# make, git, docker, perl and curl. Unlike the other ONDEWO clients' utils images this one COPIES
+# NOTHING: the Makefile's UTILS_DOCKER_RUN mounts the repository at run time, so what a target writes
+# (vendor/, build/, tools/vendor/) lands in the working tree, owned by the invoking user.
+#
+# php 8.4.25 and composer 2.8.12 are what the ondewo-php-proto-compiler image the stubs are generated
+# with resolves to (its php:8.4-cli and composer:2.8 bases), pinned here to the exact patch release;
+# composer.json declares php >= 8.1, and CI covers 8.1 and 8.4. The Debian variant keeps $PHPIZE_DEPS
+# (gcc, g++, make, autoconf, ...) installed, which `pecl install` below needs.
+FROM php:8.4.25-cli-trixie
+
+# composer from the official image, the same source as the proto compiler (no installer script)
+COPY --from=composer:2.8.12 /usr/bin/composer /usr/local/bin/composer
+
+ENV LANG=C.UTF-8
+ENV DEBIAN_FRONTEND=noninteractive
+
+# git: check_version_agreement's `git describe` and composer's source fallback. unzip: php:*-cli has no
+# ext-zip, so composer extracts every --prefer-dist archive through the unzip binary. zlib1g-dev: ext-grpc.
+# python3 + grpcio: the TLS server of tests/Tls/MutualTlsHandshakeTest.php (PHP has no gRPC server),
+# pinned to the grpc minor of composer.json's grpc/grpc (its newest patch, 1.85.1).
+RUN apt-get update -qq \
+  && apt-get install -qq -y --no-install-recommends ca-certificates curl git make perl unzip zlib1g-dev python3 python3-pip \
+  && pip3 install --no-cache-dir --break-system-packages grpcio==1.85.1 \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/*
+
+# ext-grpc: every generated <Service>Client extends \Grpc\BaseStub, so composer refuses to install the
+# package without it. Debian packages no php-grpc, so it is built from PECL (a C++ build of several
+# minutes), pinned to the grpc/grpc version composer.json pins. pcov: the coverage driver of
+# `make coverage`. ext-bcmath: google/protobuf's pure-PHP JSON parser range-checks integers with it.
+# The strip takes grpc.so from ~470 MB (debug symbols) down to ~20 MB.
+RUN MAKEFLAGS="-j$(nproc)" pecl install grpc-1.85.0 pcov-1.0.12 \
+  && strip --strip-debug "$(php-config --extension-dir)/grpc.so" \
+  && docker-php-ext-enable grpc pcov \
+  && docker-php-ext-install -j"$(nproc)" bcmath \
+  && php -r 'foreach (["grpc", "pcov", "bcmath"] as $e) { if (!extension_loaded($e)) { fwrite(STDERR, "ext-$e missing\n"); exit(1); } }' \
+  && rm -rf /tmp/pear
+
+# gh, from GitHub's apt repository - the same way the other ONDEWO clients' utils images install it
+RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+  && chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+  && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" > /etc/apt/sources.list.d/github-cli.list \
+  && apt-get update -qq \
+  && apt-get install -qq -y --no-install-recommends gh \
+  && apt-get clean \
+  && rm -rf /var/lib/apt/lists/*
+
+# The repository is mounted here by UTILS_DOCKER_RUN.
+WORKDIR /home/ondewo

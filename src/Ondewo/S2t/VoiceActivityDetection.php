@@ -124,9 +124,9 @@ class VoiceActivityDetection extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setActive($var)
+    public function setActive(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->active = $var;
 
         return $this;
@@ -150,7 +150,7 @@ class VoiceActivityDetection extends \Google\Protobuf\Internal\Message
      * @param int|string $var
      * @return $this
      */
-    public function setSamplingRate($var)
+    public function setSamplingRate(int|string $var)
     {
         GPBUtil::checkInt64($var);
         $this->sampling_rate = $var;
@@ -186,9 +186,8 @@ class VoiceActivityDetection extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\Pyannote $var
      * @return $this
      */
-    public function setPyannote($var)
+    public function setPyannote(\Ondewo\S2t\Pyannote|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\Pyannote::class);
         $this->pyannote = $var;
 
         return $this;
@@ -222,9 +221,8 @@ class VoiceActivityDetection extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\Silero $var
      * @return $this
      */
-    public function setSilero($var)
+    public function setSilero(\Ondewo\S2t\Silero|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\Silero::class);
         $this->silero = $var;
 
         return $this;
@@ -260,9 +258,8 @@ class VoiceActivityDetection extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\WespeakerTsd $var
      * @return $this
      */
-    public function setWespeakerTsd($var)
+    public function setWespeakerTsd(\Ondewo\S2t\WespeakerTsd|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\WespeakerTsd::class);
         $this->wespeaker_tsd = $var;
 
         return $this;
@@ -273,7 +270,7 @@ class VoiceActivityDetection extends \Google\Protobuf\Internal\Message
      * leave unset to keep using <code>active</code>.
      *
      * Generated from protobuf field <code>.ondewo.s2t.VadMethod vad_method = 6;</code>
-     * @return int
+     * @return int one of the values in {@see \Ondewo\S2t\VadMethod}
      */
     public function getVadMethod()
     {
@@ -285,10 +282,10 @@ class VoiceActivityDetection extends \Google\Protobuf\Internal\Message
      * leave unset to keep using <code>active</code>.
      *
      * Generated from protobuf field <code>.ondewo.s2t.VadMethod vad_method = 6;</code>
-     * @param int $var
+     * @param int $var one of the values in {@see \Ondewo\S2t\VadMethod}
      * @return $this
      */
-    public function setVadMethod($var)
+    public function setVadMethod(int $var)
     {
         GPBUtil::checkEnum($var, \Ondewo\S2t\VadMethod::class);
         $this->vad_method = $var;
@@ -302,7 +299,7 @@ class VoiceActivityDetection extends \Google\Protobuf\Internal\Message
      * also be the active VAD. Leave unset to keep the behaviour of older configurations.
      *
      * Generated from protobuf field <code>.ondewo.s2t.TsdMethod tsd_method = 7;</code>
-     * @return int
+     * @return int one of the values in {@see \Ondewo\S2t\TsdMethod}
      */
     public function getTsdMethod()
     {
@@ -315,10 +312,10 @@ class VoiceActivityDetection extends \Google\Protobuf\Internal\Message
      * also be the active VAD. Leave unset to keep the behaviour of older configurations.
      *
      * Generated from protobuf field <code>.ondewo.s2t.TsdMethod tsd_method = 7;</code>
-     * @param int $var
+     * @param int $var one of the values in {@see \Ondewo\S2t\TsdMethod}
      * @return $this
      */
-    public function setTsdMethod($var)
+    public function setTsdMethod(int $var)
     {
         GPBUtil::checkEnum($var, \Ondewo\S2t\TsdMethod::class);
         $this->tsd_method = $var;

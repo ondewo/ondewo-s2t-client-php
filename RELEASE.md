@@ -2,6 +2,16 @@
 
 *****************
 
+## Release ONDEWO S2T PHP Client 7.6.0
+
+### Improvements
+
+* Tracking API Version [7.6.0](https://github.com/ondewo/ondewo-s2t-api/releases/tag/7.6.0) ( [Documentation](https://ondewo.github.io/ondewo-s2t-api/) )
+* Generated with ondewo-proto-compiler 5.17.0 (protoc 35.1, `grpc_php_plugin` built from grpc v1.85.0). New runtime floors: `google/protobuf` 5.35.1 (a major step from 4.33.6; requires php >= 8.2.0) and `grpc/grpc` 1.85.0.
+* The build and the release run in docker, as in ondewo-nlu-client-php: the tests, the Packagist dry run and ping and `gh release create` run in the utils image built from `Dockerfile.utils`, the compiler container runs as the invoking user (no `sudo`), the GitHub token is validated before anything is pushed and the GitHub release is created last. The tag-triggered `release.yml` workflow is removed: CI only tests.
+
+*****************
+
 ## Release ONDEWO S2T PHP Client 7.5.1
 
 ### Improvements

@@ -128,9 +128,9 @@ class AcousticModels extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setType($var)
+    public function setType(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->type = $var;
 
         return $this;
@@ -164,9 +164,8 @@ class AcousticModels extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\Wav2Vec $var
      * @return $this
      */
-    public function setWav2Vec($var)
+    public function setWav2Vec(\Ondewo\S2t\Wav2Vec|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\Wav2Vec::class);
         $this->wav2vec = $var;
 
         return $this;
@@ -200,9 +199,8 @@ class AcousticModels extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\Wav2VecTriton $var
      * @return $this
      */
-    public function setWav2VecTriton($var)
+    public function setWav2VecTriton(\Ondewo\S2t\Wav2VecTriton|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\Wav2VecTriton::class);
         $this->wav2vec_triton = $var;
 
         return $this;
@@ -236,9 +234,8 @@ class AcousticModels extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\Whisper $var
      * @return $this
      */
-    public function setWhisper($var)
+    public function setWhisper(\Ondewo\S2t\Whisper|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\Whisper::class);
         $this->whisper = $var;
 
         return $this;
@@ -272,9 +269,8 @@ class AcousticModels extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\WhisperTriton $var
      * @return $this
      */
-    public function setWhisperTriton($var)
+    public function setWhisperTriton(\Ondewo\S2t\WhisperTriton|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\WhisperTriton::class);
         $this->whisper_triton = $var;
 
         return $this;
@@ -308,9 +304,8 @@ class AcousticModels extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\S2tCloudServiceAmazon $var
      * @return $this
      */
-    public function setS2TCloudServiceAmazon($var)
+    public function setS2TCloudServiceAmazon(\Ondewo\S2t\S2tCloudServiceAmazon|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\S2tCloudServiceAmazon::class);
         $this->s2t_cloud_service_amazon = $var;
 
         return $this;
@@ -344,9 +339,8 @@ class AcousticModels extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\S2tCloudServiceDeepgram $var
      * @return $this
      */
-    public function setS2TCloudServiceDeepgram($var)
+    public function setS2TCloudServiceDeepgram(\Ondewo\S2t\S2tCloudServiceDeepgram|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\S2tCloudServiceDeepgram::class);
         $this->s2t_cloud_service_deepgram = $var;
 
         return $this;
@@ -380,9 +374,8 @@ class AcousticModels extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\S2tCloudServiceGoogle $var
      * @return $this
      */
-    public function setS2TCloudServiceGoogle($var)
+    public function setS2TCloudServiceGoogle(\Ondewo\S2t\S2tCloudServiceGoogle|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\S2tCloudServiceGoogle::class);
         $this->s2t_cloud_service_google = $var;
 
         return $this;
@@ -416,9 +409,8 @@ class AcousticModels extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\S2tCloudServiceMicrosoft $var
      * @return $this
      */
-    public function setS2TCloudServiceMicrosoft($var)
+    public function setS2TCloudServiceMicrosoft(\Ondewo\S2t\S2tCloudServiceMicrosoft|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\S2tCloudServiceMicrosoft::class);
         $this->s2t_cloud_service_microsoft = $var;
 
         return $this;
@@ -452,9 +444,8 @@ class AcousticModels extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\Parakeet $var
      * @return $this
      */
-    public function setParakeet($var)
+    public function setParakeet(\Ondewo\S2t\Parakeet|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\Parakeet::class);
         $this->parakeet = $var;
 
         return $this;

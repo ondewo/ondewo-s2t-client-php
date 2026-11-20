@@ -114,9 +114,8 @@ class S2tLlmPostProcessingNormalizationOptions extends \Google\Protobuf\Internal
      * @param bool $var
      * @return $this
      */
-    public function setActive($var)
+    public function setActive(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->active = $var;
 
         return $this;
@@ -150,9 +149,8 @@ class S2tLlmPostProcessingNormalizationOptions extends \Google\Protobuf\Internal
      * @param \Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions $var
      * @return $this
      */
-    public function setEmail($var)
+    public function setEmail(\Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions::class);
         $this->email = $var;
 
         return $this;
@@ -186,9 +184,8 @@ class S2tLlmPostProcessingNormalizationOptions extends \Google\Protobuf\Internal
      * @param \Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions $var
      * @return $this
      */
-    public function setPhoneNumber($var)
+    public function setPhoneNumber(\Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions::class);
         $this->phone_number = $var;
 
         return $this;
@@ -222,9 +219,8 @@ class S2tLlmPostProcessingNormalizationOptions extends \Google\Protobuf\Internal
      * @param \Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions $var
      * @return $this
      */
-    public function setDateAndTime($var)
+    public function setDateAndTime(\Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions::class);
         $this->date_and_time = $var;
 
         return $this;
@@ -258,9 +254,8 @@ class S2tLlmPostProcessingNormalizationOptions extends \Google\Protobuf\Internal
      * @param \Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions $var
      * @return $this
      */
-    public function setCreditCardNumber($var)
+    public function setCreditCardNumber(\Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions::class);
         $this->credit_card_number = $var;
 
         return $this;
@@ -294,9 +289,8 @@ class S2tLlmPostProcessingNormalizationOptions extends \Google\Protobuf\Internal
      * @param \Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions $var
      * @return $this
      */
-    public function setSocialSecurityNumber($var)
+    public function setSocialSecurityNumber(\Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions::class);
         $this->social_security_number = $var;
 
         return $this;
@@ -330,9 +324,8 @@ class S2tLlmPostProcessingNormalizationOptions extends \Google\Protobuf\Internal
      * @param \Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions $var
      * @return $this
      */
-    public function setTimeZone($var)
+    public function setTimeZone(\Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions::class);
         $this->time_zone = $var;
 
         return $this;

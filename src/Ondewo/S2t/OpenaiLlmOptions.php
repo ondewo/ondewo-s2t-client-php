@@ -416,9 +416,9 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setApiKey($var)
+    public function setApiKey(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->api_key = $var;
 
         return $this;
@@ -452,9 +452,9 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setOrganization($var)
+    public function setOrganization(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->organization = $var;
 
         return $this;
@@ -488,9 +488,9 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setProject($var)
+    public function setProject(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->project = $var;
 
         return $this;
@@ -524,9 +524,9 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setWebhookSecret($var)
+    public function setWebhookSecret(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->webhook_secret = $var;
 
         return $this;
@@ -562,9 +562,9 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setBaseUrl($var)
+    public function setBaseUrl(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->base_url = $var;
 
         return $this;
@@ -598,9 +598,9 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setWebsocketBaseUrl($var)
+    public function setWebsocketBaseUrl(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->websocket_base_url = $var;
 
         return $this;
@@ -636,9 +636,8 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * @param float $var
      * @return $this
      */
-    public function setTimeout($var)
+    public function setTimeout(float $var)
     {
-        GPBUtil::checkFloat($var);
         $this->timeout = $var;
 
         return $this;
@@ -674,7 +673,7 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * @param int $var
      * @return $this
      */
-    public function setMaxRetries($var)
+    public function setMaxRetries(int $var)
     {
         GPBUtil::checkInt32($var);
         $this->max_retries = $var;
@@ -700,7 +699,7 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * @param array|\Google\Protobuf\Internal\MapField $var
      * @return $this
      */
-    public function setDefaultHeaders($var)
+    public function setDefaultHeaders(array|\Google\Protobuf\Internal\MapField $var)
     {
         $arr = GPBUtil::checkMapField($var, \Google\Protobuf\Internal\GPBType::STRING, \Google\Protobuf\Internal\GPBType::STRING);
         $this->default_headers = $arr;
@@ -738,9 +737,8 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * @param \Google\Protobuf\Struct $var
      * @return $this
      */
-    public function setDefaultQuery($var)
+    public function setDefaultQuery(\Google\Protobuf\Struct|null $var)
     {
-        GPBUtil::checkMessage($var, \Google\Protobuf\Struct::class);
         $this->default_query = $var;
 
         return $this;
@@ -774,9 +772,8 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setStrictResponseValidation($var)
+    public function setStrictResponseValidation(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->strict_response_validation = $var;
 
         return $this;
@@ -802,9 +799,9 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setModel($var)
+    public function setModel(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->model = $var;
 
         return $this;
@@ -842,9 +839,8 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * @param float $var
      * @return $this
      */
-    public function setFrequencyPenalty($var)
+    public function setFrequencyPenalty(float $var)
     {
-        GPBUtil::checkFloat($var);
         $this->frequency_penalty = $var;
 
         return $this;
@@ -870,7 +866,7 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * @param array|\Google\Protobuf\Internal\MapField $var
      * @return $this
      */
-    public function setLogitBias($var)
+    public function setLogitBias(array|\Google\Protobuf\Internal\MapField $var)
     {
         $arr = GPBUtil::checkMapField($var, \Google\Protobuf\Internal\GPBType::STRING, \Google\Protobuf\Internal\GPBType::INT32);
         $this->logit_bias = $arr;
@@ -908,9 +904,8 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setLogprobs($var)
+    public function setLogprobs(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->logprobs = $var;
 
         return $this;
@@ -946,7 +941,7 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * @param int $var
      * @return $this
      */
-    public function setMaxCompletionTokens($var)
+    public function setMaxCompletionTokens(int $var)
     {
         GPBUtil::checkInt32($var);
         $this->max_completion_tokens = $var;
@@ -984,7 +979,7 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * @param int $var
      * @return $this
      */
-    public function setMaxTokens($var)
+    public function setMaxTokens(int $var)
     {
         GPBUtil::checkInt32($var);
         $this->max_tokens = $var;
@@ -1022,9 +1017,8 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * @param \Google\Protobuf\Struct $var
      * @return $this
      */
-    public function setMetadata($var)
+    public function setMetadata(\Google\Protobuf\Struct|null $var)
     {
-        GPBUtil::checkMessage($var, \Google\Protobuf\Struct::class);
         $this->metadata = $var;
 
         return $this;
@@ -1060,7 +1054,7 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * @param int $var
      * @return $this
      */
-    public function setN($var)
+    public function setN(int $var)
     {
         GPBUtil::checkInt32($var);
         $this->n = $var;
@@ -1098,9 +1092,8 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * @param float $var
      * @return $this
      */
-    public function setPresencePenalty($var)
+    public function setPresencePenalty(float $var)
     {
-        GPBUtil::checkFloat($var);
         $this->presence_penalty = $var;
 
         return $this;
@@ -1136,9 +1129,9 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setPromptCacheKey($var)
+    public function setPromptCacheKey(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->prompt_cache_key = $var;
 
         return $this;
@@ -1151,7 +1144,7 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * fewer tokens used on reasoning in a response.
      *
      * Generated from protobuf field <code>optional .ondewo.s2t.ReasoningEffort reasoning_effort = 22;</code>
-     * @return int
+     * @return int one of the values in {@see \Ondewo\S2t\ReasoningEffort}
      */
     public function getReasoningEffort()
     {
@@ -1175,10 +1168,10 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * fewer tokens used on reasoning in a response.
      *
      * Generated from protobuf field <code>optional .ondewo.s2t.ReasoningEffort reasoning_effort = 22;</code>
-     * @param int $var
+     * @param int $var one of the values in {@see \Ondewo\S2t\ReasoningEffort}
      * @return $this
      */
-    public function setReasoningEffort($var)
+    public function setReasoningEffort(int $var)
     {
         GPBUtil::checkEnum($var, \Ondewo\S2t\ReasoningEffort::class);
         $this->reasoning_effort = $var;
@@ -1195,7 +1188,7 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      */
     public function getSeed()
     {
-        return isset($this->seed) ? $this->seed : 0;
+        return isset($this->seed) ? $this->seed : GPBUtil::compatibleInt64(0, '0');
     }
 
     public function hasSeed()
@@ -1216,7 +1209,7 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * @param int|string $var
      * @return $this
      */
-    public function setSeed($var)
+    public function setSeed(int|string $var)
     {
         GPBUtil::checkInt64($var);
         $this->seed = $var;
@@ -1239,7 +1232,7 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * the parameter.
      *
      * Generated from protobuf field <code>optional .ondewo.s2t.ServiceTier service_tier = 24;</code>
-     * @return int
+     * @return int one of the values in {@see \Ondewo\S2t\ServiceTier}
      */
     public function getServiceTier()
     {
@@ -1271,10 +1264,10 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * the parameter.
      *
      * Generated from protobuf field <code>optional .ondewo.s2t.ServiceTier service_tier = 24;</code>
-     * @param int $var
+     * @param int $var one of the values in {@see \Ondewo\S2t\ServiceTier}
      * @return $this
      */
-    public function setServiceTier($var)
+    public function setServiceTier(int $var)
     {
         GPBUtil::checkEnum($var, \Ondewo\S2t\ServiceTier::class);
         $this->service_tier = $var;
@@ -1302,7 +1295,7 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * @param string[] $var
      * @return $this
      */
-    public function setStop($var)
+    public function setStop(array|RepeatedField $var)
     {
         $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::STRING);
         $this->stop = $arr;
@@ -1340,9 +1333,8 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setStore($var)
+    public function setStore(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->store = $var;
 
         return $this;
@@ -1378,9 +1370,8 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * @param float $var
      * @return $this
      */
-    public function setTemperature($var)
+    public function setTemperature(float $var)
     {
-        GPBUtil::checkFloat($var);
         $this->temperature = $var;
 
         return $this;
@@ -1416,7 +1407,7 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * @param int $var
      * @return $this
      */
-    public function setTopLogprobs($var)
+    public function setTopLogprobs(int $var)
     {
         GPBUtil::checkInt32($var);
         $this->top_logprobs = $var;
@@ -1454,9 +1445,8 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * @param float $var
      * @return $this
      */
-    public function setTopP($var)
+    public function setTopP(float $var)
     {
-        GPBUtil::checkFloat($var);
         $this->top_p = $var;
 
         return $this;
@@ -1496,9 +1486,9 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setUser($var)
+    public function setUser(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->user = $var;
 
         return $this;
@@ -1510,7 +1500,7 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * Currently supported values are `low`, `medium`, and `high`.
      *
      * Generated from protobuf field <code>optional .ondewo.s2t.Verbosity verbosity = 31;</code>
-     * @return int
+     * @return int one of the values in {@see \Ondewo\S2t\Verbosity}
      */
     public function getVerbosity()
     {
@@ -1533,10 +1523,10 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * Currently supported values are `low`, `medium`, and `high`.
      *
      * Generated from protobuf field <code>optional .ondewo.s2t.Verbosity verbosity = 31;</code>
-     * @param int $var
+     * @param int $var one of the values in {@see \Ondewo\S2t\Verbosity}
      * @return $this
      */
-    public function setVerbosity($var)
+    public function setVerbosity(int $var)
     {
         GPBUtil::checkEnum($var, \Ondewo\S2t\Verbosity::class);
         $this->verbosity = $var;
@@ -1574,9 +1564,8 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * @param \Google\Protobuf\Struct $var
      * @return $this
      */
-    public function setExtraHeaders($var)
+    public function setExtraHeaders(\Google\Protobuf\Struct|null $var)
     {
-        GPBUtil::checkMessage($var, \Google\Protobuf\Struct::class);
         $this->extra_headers = $var;
 
         return $this;
@@ -1612,9 +1601,8 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * @param \Google\Protobuf\Struct $var
      * @return $this
      */
-    public function setExtraQuery($var)
+    public function setExtraQuery(\Google\Protobuf\Struct|null $var)
     {
-        GPBUtil::checkMessage($var, \Google\Protobuf\Struct::class);
         $this->extra_query = $var;
 
         return $this;
@@ -1650,9 +1638,8 @@ class OpenaiLlmOptions extends \Google\Protobuf\Internal\Message
      * @param \Google\Protobuf\Struct $var
      * @return $this
      */
-    public function setExtraBody($var)
+    public function setExtraBody(\Google\Protobuf\Struct|null $var)
     {
-        GPBUtil::checkMessage($var, \Google\Protobuf\Struct::class);
         $this->extra_body = $var;
 
         return $this;

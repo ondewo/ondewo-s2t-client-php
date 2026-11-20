@@ -80,9 +80,9 @@ class StreamingServer extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setHost($var)
+    public function setHost(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->host = $var;
 
         return $this;
@@ -106,7 +106,7 @@ class StreamingServer extends \Google\Protobuf\Internal\Message
      * @param int|string $var
      * @return $this
      */
-    public function setPort($var)
+    public function setPort(int|string $var)
     {
         GPBUtil::checkInt64($var);
         $this->port = $var;
@@ -132,9 +132,9 @@ class StreamingServer extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setOutputStyle($var)
+    public function setOutputStyle(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->output_style = $var;
 
         return $this;
@@ -168,9 +168,8 @@ class StreamingServer extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\StreamingSpeechRecognition $var
      * @return $this
      */
-    public function setStreamingSpeechRecognition($var)
+    public function setStreamingSpeechRecognition(\Ondewo\S2t\StreamingSpeechRecognition|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\StreamingSpeechRecognition::class);
         $this->streaming_speech_recognition = $var;
 
         return $this;

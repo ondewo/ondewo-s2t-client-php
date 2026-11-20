@@ -17,11 +17,15 @@ use Google\Protobuf\RepeatedField;
 class StreamingSpeechRecognition extends \Google\Protobuf\Internal\Message
 {
     /**
-     * Indicates whether to transcribe non-final results.
+     * Indicates whether to transcribe non-final results for every stream of this pipeline. Unset: the server
+     * default, which is now <code>true</code>; an explicit <code>false</code> opts the pipeline out of non-final
+     * results. A request's <code>UtteranceDetectionOptions.transcribe_not_final</code> overrides it. Declared
+     * <code>optional</code> (same field number, wire-compatible) so an explicit <code>false</code> can be told
+     * apart from unset.
      *
-     * Generated from protobuf field <code>bool transcribe_not_final = 1;</code>
+     * Generated from protobuf field <code>optional bool transcribe_not_final = 1;</code>
      */
-    protected $transcribe_not_final = false;
+    protected $transcribe_not_final = null;
     /**
      * Decoding method for speech recognition.
      *
@@ -52,6 +56,16 @@ class StreamingSpeechRecognition extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>.ondewo.s2t.TurnDetectionOptions turn_detection = 6;</code>
      */
     protected $turn_detection = null;
+    /**
+     * Optional. The minimum new audio, in seconds, between two non-final transcriptions of an utterance (the
+     * partial-transcription cadence) for every stream of this pipeline. Overrides the server setting
+     * <code>ONDEWO_S2T_INFERENCE_SLIDING_PERIOD_OF_TRANSCRIPT</code>; a request's
+     * <code>UtteranceDetectionOptions.transcribe_not_final_period_seconds</code> overrides it. Allowed: (0, 5]; the
+     * effective cadence is rounded up to whole <code>min_audio_chunk_size</code> chunks. Unset: the server setting.
+     *
+     * Generated from protobuf field <code>optional float transcribe_not_final_period_seconds = 7;</code>
+     */
+    protected $transcribe_not_final_period_seconds = null;
 
     /**
      * Constructor.
@@ -60,7 +74,11 @@ class StreamingSpeechRecognition extends \Google\Protobuf\Internal\Message
      *     Optional. Data for populating the Message object.
      *
      *     @type bool $transcribe_not_final
-     *           Indicates whether to transcribe non-final results.
+     *           Indicates whether to transcribe non-final results for every stream of this pipeline. Unset: the server
+     *           default, which is now <code>true</code>; an explicit <code>false</code> opts the pipeline out of non-final
+     *           results. A request's <code>UtteranceDetectionOptions.transcribe_not_final</code> overrides it. Declared
+     *           <code>optional</code> (same field number, wire-compatible) so an explicit <code>false</code> can be told
+     *           apart from unset.
      *     @type string $decoding_method
      *           Decoding method for speech recognition.
      *     @type int|string $sampling_rate
@@ -71,6 +89,12 @@ class StreamingSpeechRecognition extends \Google\Protobuf\Internal\Message
      *           Timeout between audio chunks; if exceeded, the stream will be stopped.
      *     @type \Ondewo\S2t\TurnDetectionOptions $turn_detection
      *           Configuration of the options to turn-detection in utterances
+     *     @type float $transcribe_not_final_period_seconds
+     *           Optional. The minimum new audio, in seconds, between two non-final transcriptions of an utterance (the
+     *           partial-transcription cadence) for every stream of this pipeline. Overrides the server setting
+     *           <code>ONDEWO_S2T_INFERENCE_SLIDING_PERIOD_OF_TRANSCRIPT</code>; a request's
+     *           <code>UtteranceDetectionOptions.transcribe_not_final_period_seconds</code> overrides it. Allowed: (0, 5]; the
+     *           effective cadence is rounded up to whole <code>min_audio_chunk_size</code> chunks. Unset: the server setting.
      * }
      */
     public function __construct($data = NULL) {
@@ -79,26 +103,43 @@ class StreamingSpeechRecognition extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Indicates whether to transcribe non-final results.
+     * Indicates whether to transcribe non-final results for every stream of this pipeline. Unset: the server
+     * default, which is now <code>true</code>; an explicit <code>false</code> opts the pipeline out of non-final
+     * results. A request's <code>UtteranceDetectionOptions.transcribe_not_final</code> overrides it. Declared
+     * <code>optional</code> (same field number, wire-compatible) so an explicit <code>false</code> can be told
+     * apart from unset.
      *
-     * Generated from protobuf field <code>bool transcribe_not_final = 1;</code>
+     * Generated from protobuf field <code>optional bool transcribe_not_final = 1;</code>
      * @return bool
      */
     public function getTranscribeNotFinal()
     {
-        return $this->transcribe_not_final;
+        return isset($this->transcribe_not_final) ? $this->transcribe_not_final : false;
+    }
+
+    public function hasTranscribeNotFinal()
+    {
+        return isset($this->transcribe_not_final);
+    }
+
+    public function clearTranscribeNotFinal()
+    {
+        unset($this->transcribe_not_final);
     }
 
     /**
-     * Indicates whether to transcribe non-final results.
+     * Indicates whether to transcribe non-final results for every stream of this pipeline. Unset: the server
+     * default, which is now <code>true</code>; an explicit <code>false</code> opts the pipeline out of non-final
+     * results. A request's <code>UtteranceDetectionOptions.transcribe_not_final</code> overrides it. Declared
+     * <code>optional</code> (same field number, wire-compatible) so an explicit <code>false</code> can be told
+     * apart from unset.
      *
-     * Generated from protobuf field <code>bool transcribe_not_final = 1;</code>
+     * Generated from protobuf field <code>optional bool transcribe_not_final = 1;</code>
      * @param bool $var
      * @return $this
      */
-    public function setTranscribeNotFinal($var)
+    public function setTranscribeNotFinal(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->transcribe_not_final = $var;
 
         return $this;
@@ -122,9 +163,9 @@ class StreamingSpeechRecognition extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setDecodingMethod($var)
+    public function setDecodingMethod(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->decoding_method = $var;
 
         return $this;
@@ -148,7 +189,7 @@ class StreamingSpeechRecognition extends \Google\Protobuf\Internal\Message
      * @param int|string $var
      * @return $this
      */
-    public function setSamplingRate($var)
+    public function setSamplingRate(int|string $var)
     {
         GPBUtil::checkInt64($var);
         $this->sampling_rate = $var;
@@ -174,7 +215,7 @@ class StreamingSpeechRecognition extends \Google\Protobuf\Internal\Message
      * @param int|string $var
      * @return $this
      */
-    public function setMinAudioChunkSize($var)
+    public function setMinAudioChunkSize(int|string $var)
     {
         GPBUtil::checkInt64($var);
         $this->min_audio_chunk_size = $var;
@@ -200,9 +241,8 @@ class StreamingSpeechRecognition extends \Google\Protobuf\Internal\Message
      * @param float $var
      * @return $this
      */
-    public function setNextChunkTimeout($var)
+    public function setNextChunkTimeout(float $var)
     {
-        GPBUtil::checkFloat($var);
         $this->next_chunk_timeout = $var;
 
         return $this;
@@ -236,10 +276,52 @@ class StreamingSpeechRecognition extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\TurnDetectionOptions $var
      * @return $this
      */
-    public function setTurnDetection($var)
+    public function setTurnDetection(\Ondewo\S2t\TurnDetectionOptions|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\TurnDetectionOptions::class);
         $this->turn_detection = $var;
+
+        return $this;
+    }
+
+    /**
+     * Optional. The minimum new audio, in seconds, between two non-final transcriptions of an utterance (the
+     * partial-transcription cadence) for every stream of this pipeline. Overrides the server setting
+     * <code>ONDEWO_S2T_INFERENCE_SLIDING_PERIOD_OF_TRANSCRIPT</code>; a request's
+     * <code>UtteranceDetectionOptions.transcribe_not_final_period_seconds</code> overrides it. Allowed: (0, 5]; the
+     * effective cadence is rounded up to whole <code>min_audio_chunk_size</code> chunks. Unset: the server setting.
+     *
+     * Generated from protobuf field <code>optional float transcribe_not_final_period_seconds = 7;</code>
+     * @return float
+     */
+    public function getTranscribeNotFinalPeriodSeconds()
+    {
+        return isset($this->transcribe_not_final_period_seconds) ? $this->transcribe_not_final_period_seconds : 0.0;
+    }
+
+    public function hasTranscribeNotFinalPeriodSeconds()
+    {
+        return isset($this->transcribe_not_final_period_seconds);
+    }
+
+    public function clearTranscribeNotFinalPeriodSeconds()
+    {
+        unset($this->transcribe_not_final_period_seconds);
+    }
+
+    /**
+     * Optional. The minimum new audio, in seconds, between two non-final transcriptions of an utterance (the
+     * partial-transcription cadence) for every stream of this pipeline. Overrides the server setting
+     * <code>ONDEWO_S2T_INFERENCE_SLIDING_PERIOD_OF_TRANSCRIPT</code>; a request's
+     * <code>UtteranceDetectionOptions.transcribe_not_final_period_seconds</code> overrides it. Allowed: (0, 5]; the
+     * effective cadence is rounded up to whole <code>min_audio_chunk_size</code> chunks. Unset: the server setting.
+     *
+     * Generated from protobuf field <code>optional float transcribe_not_final_period_seconds = 7;</code>
+     * @param float $var
+     * @return $this
+     */
+    public function setTranscribeNotFinalPeriodSeconds(float $var)
+    {
+        $this->transcribe_not_final_period_seconds = $var;
 
         return $this;
     }

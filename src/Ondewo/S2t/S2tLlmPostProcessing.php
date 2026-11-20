@@ -154,9 +154,8 @@ class S2tLlmPostProcessing extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\OpenaiLlmOptions $var
      * @return $this
      */
-    public function setS2TLlmPostProcessingOpenaiOptions($var)
+    public function setS2TLlmPostProcessingOpenaiOptions(\Ondewo\S2t\OpenaiLlmOptions|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\OpenaiLlmOptions::class);
         $this->s2t_llm_post_processing_openai_options = $var;
 
         return $this;
@@ -190,9 +189,9 @@ class S2tLlmPostProcessing extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setS2TLlmPostProcessingSystemPrompt($var)
+    public function setS2TLlmPostProcessingSystemPrompt(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->s2t_llm_post_processing_system_prompt = $var;
 
         return $this;
@@ -226,9 +225,9 @@ class S2tLlmPostProcessing extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setS2TLlmPostProcessingEndingPrompt($var)
+    public function setS2TLlmPostProcessingEndingPrompt(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->s2t_llm_post_processing_ending_prompt = $var;
 
         return $this;
@@ -262,9 +261,8 @@ class S2tLlmPostProcessing extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions $var
      * @return $this
      */
-    public function setS2TLlmPostProcessingCasingOptions($var)
+    public function setS2TLlmPostProcessingCasingOptions(\Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions::class);
         $this->s2t_llm_post_processing_casing_options = $var;
 
         return $this;
@@ -298,9 +296,8 @@ class S2tLlmPostProcessing extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions $var
      * @return $this
      */
-    public function setS2TLlmPostProcessingPunctuationOptions($var)
+    public function setS2TLlmPostProcessingPunctuationOptions(\Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions::class);
         $this->s2t_llm_post_processing_punctuation_options = $var;
 
         return $this;
@@ -334,9 +331,8 @@ class S2tLlmPostProcessing extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions $var
      * @return $this
      */
-    public function setS2TLlmPostProcessingSpellingCorrectionOptions($var)
+    public function setS2TLlmPostProcessingSpellingCorrectionOptions(\Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions::class);
         $this->s2t_llm_post_processing_spelling_correction_options = $var;
 
         return $this;
@@ -370,9 +366,8 @@ class S2tLlmPostProcessing extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions $var
      * @return $this
      */
-    public function setS2TLlmPostProcessingSemanticCorrectionOptions($var)
+    public function setS2TLlmPostProcessingSemanticCorrectionOptions(\Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions::class);
         $this->s2t_llm_post_processing_semantic_correction_options = $var;
 
         return $this;
@@ -406,9 +401,8 @@ class S2tLlmPostProcessing extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\S2tLlmPostProcessingTranslationOptions $var
      * @return $this
      */
-    public function setS2TLlmPostProcessingTranslationOptions($var)
+    public function setS2TLlmPostProcessingTranslationOptions(\Ondewo\S2t\S2tLlmPostProcessingTranslationOptions|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\S2tLlmPostProcessingTranslationOptions::class);
         $this->s2t_llm_post_processing_translation_options = $var;
 
         return $this;
@@ -442,9 +436,8 @@ class S2tLlmPostProcessing extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\S2tLlmPostProcessingInverseNormalizationOptions $var
      * @return $this
      */
-    public function setS2TLlmPostProcessingInverseNormalizationOptions($var)
+    public function setS2TLlmPostProcessingInverseNormalizationOptions(\Ondewo\S2t\S2tLlmPostProcessingInverseNormalizationOptions|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\S2tLlmPostProcessingInverseNormalizationOptions::class);
         $this->s2t_llm_post_processing_inverse_normalization_options = $var;
 
         return $this;
@@ -478,9 +471,8 @@ class S2tLlmPostProcessing extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\S2tLlmPostProcessingNormalizationOptions $var
      * @return $this
      */
-    public function setS2TLlmPostProcessingNormalizationOptions($var)
+    public function setS2TLlmPostProcessingNormalizationOptions(\Ondewo\S2t\S2tLlmPostProcessingNormalizationOptions|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\S2tLlmPostProcessingNormalizationOptions::class);
         $this->s2t_llm_post_processing_normalization_options = $var;
 
         return $this;
@@ -514,9 +506,8 @@ class S2tLlmPostProcessing extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\S2tLlmPostProcessingSummarizationOptions $var
      * @return $this
      */
-    public function setS2TLlmPostProcessingSummarizationOptions($var)
+    public function setS2TLlmPostProcessingSummarizationOptions(\Ondewo\S2t\S2tLlmPostProcessingSummarizationOptions|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\S2tLlmPostProcessingSummarizationOptions::class);
         $this->s2t_llm_post_processing_summarization_options = $var;
 
         return $this;
@@ -550,9 +541,8 @@ class S2tLlmPostProcessing extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions $var
      * @return $this
      */
-    public function setS2TLlmPostProcessingUserPromptOptions($var)
+    public function setS2TLlmPostProcessingUserPromptOptions(\Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\S2tLlmPostProcessingSubTaskOptions::class);
         $this->s2t_llm_post_processing_user_prompt_options = $var;
 
         return $this;

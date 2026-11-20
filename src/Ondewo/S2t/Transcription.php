@@ -82,9 +82,9 @@ class Transcription extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setTranscription($var)
+    public function setTranscription(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->transcription = $var;
 
         return $this;
@@ -110,9 +110,8 @@ class Transcription extends \Google\Protobuf\Internal\Message
      * @param float $var
      * @return $this
      */
-    public function setConfidenceScore($var)
+    public function setConfidenceScore(float $var)
     {
-        GPBUtil::checkFloat($var);
         $this->confidence_score = $var;
 
         return $this;
@@ -136,7 +135,7 @@ class Transcription extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\WordDetail[] $var
      * @return $this
      */
-    public function setWords($var)
+    public function setWords(array|RepeatedField $var)
     {
         $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Ondewo\S2t\WordDetail::class);
         $this->words = $arr;
@@ -162,7 +161,7 @@ class Transcription extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\TranscriptionAlternative[] $var
      * @return $this
      */
-    public function setAlternatives($var)
+    public function setAlternatives(array|RepeatedField $var)
     {
         $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Ondewo\S2t\TranscriptionAlternative::class);
         $this->alternatives = $arr;

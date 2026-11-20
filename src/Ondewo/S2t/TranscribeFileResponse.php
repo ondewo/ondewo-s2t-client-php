@@ -72,7 +72,7 @@ class TranscribeFileResponse extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\Transcription[] $var
      * @return $this
      */
-    public function setTranscriptions($var)
+    public function setTranscriptions(array|RepeatedField $var)
     {
         $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Ondewo\S2t\Transcription::class);
         $this->transcriptions = $arr;
@@ -98,9 +98,8 @@ class TranscribeFileResponse extends \Google\Protobuf\Internal\Message
      * @param float $var
      * @return $this
      */
-    public function setTime($var)
+    public function setTime(float $var)
     {
-        GPBUtil::checkFloat($var);
         $this->time = $var;
 
         return $this;
@@ -124,9 +123,9 @@ class TranscribeFileResponse extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setAudioUuid($var)
+    public function setAudioUuid(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->audio_uuid = $var;
 
         return $this;

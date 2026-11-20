@@ -64,9 +64,9 @@ class LanguageModelPipelineId extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setPipelineId($var)
+    public function setPipelineId(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->pipeline_id = $var;
 
         return $this;
@@ -90,7 +90,7 @@ class LanguageModelPipelineId extends \Google\Protobuf\Internal\Message
      * @param string[] $var
      * @return $this
      */
-    public function setModelNames($var)
+    public function setModelNames(array|RepeatedField $var)
     {
         $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::STRING);
         $this->model_names = $arr;

@@ -78,9 +78,8 @@ class S2tLlmPostProcessingSubTaskOptions extends \Google\Protobuf\Internal\Messa
      * @param bool $var
      * @return $this
      */
-    public function setActive($var)
+    public function setActive(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->active = $var;
 
         return $this;
@@ -116,9 +115,9 @@ class S2tLlmPostProcessingSubTaskOptions extends \Google\Protobuf\Internal\Messa
      * @param string $var
      * @return $this
      */
-    public function setPrompt($var)
+    public function setPrompt(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->prompt = $var;
 
         return $this;

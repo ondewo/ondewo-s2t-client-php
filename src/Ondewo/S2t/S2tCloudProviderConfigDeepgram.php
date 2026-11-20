@@ -112,9 +112,8 @@ class S2tCloudProviderConfigDeepgram extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setPunctuate($var)
+    public function setPunctuate(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->punctuate = $var;
 
         return $this;
@@ -150,9 +149,8 @@ class S2tCloudProviderConfigDeepgram extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setSmartFormat($var)
+    public function setSmartFormat(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->smart_format = $var;
 
         return $this;
@@ -188,9 +186,8 @@ class S2tCloudProviderConfigDeepgram extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setNumerals($var)
+    public function setNumerals(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->numerals = $var;
 
         return $this;
@@ -228,9 +225,8 @@ class S2tCloudProviderConfigDeepgram extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setMeasurements($var)
+    public function setMeasurements(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->measurements = $var;
 
         return $this;
@@ -266,9 +262,8 @@ class S2tCloudProviderConfigDeepgram extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setDictation($var)
+    public function setDictation(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->dictation = $var;
 
         return $this;

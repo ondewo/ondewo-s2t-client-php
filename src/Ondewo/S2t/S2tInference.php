@@ -82,9 +82,8 @@ class S2tInference extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\AcousticModels $var
      * @return $this
      */
-    public function setAcousticModels($var)
+    public function setAcousticModels(\Ondewo\S2t\AcousticModels|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\AcousticModels::class);
         $this->acoustic_models = $var;
 
         return $this;
@@ -118,9 +117,8 @@ class S2tInference extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\LanguageModels $var
      * @return $this
      */
-    public function setLanguageModels($var)
+    public function setLanguageModels(\Ondewo\S2t\LanguageModels|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\LanguageModels::class);
         $this->language_models = $var;
 
         return $this;
@@ -130,7 +128,7 @@ class S2tInference extends \Google\Protobuf\Internal\Message
      * Configuration for the inference backend.
      *
      * Generated from protobuf field <code>.ondewo.s2t.InferenceBackend inference_backend = 3;</code>
-     * @return int
+     * @return int one of the values in {@see \Ondewo\S2t\InferenceBackend}
      */
     public function getInferenceBackend()
     {
@@ -141,10 +139,10 @@ class S2tInference extends \Google\Protobuf\Internal\Message
      * Configuration for the inference backend.
      *
      * Generated from protobuf field <code>.ondewo.s2t.InferenceBackend inference_backend = 3;</code>
-     * @param int $var
+     * @param int $var one of the values in {@see \Ondewo\S2t\InferenceBackend}
      * @return $this
      */
-    public function setInferenceBackend($var)
+    public function setInferenceBackend(int $var)
     {
         GPBUtil::checkEnum($var, \Ondewo\S2t\InferenceBackend::class);
         $this->inference_backend = $var;

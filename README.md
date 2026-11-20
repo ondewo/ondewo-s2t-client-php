@@ -42,7 +42,8 @@ The only hand-written PHP is the bearer-token authentication surface in `auth/`,
   format; `google/protobuf` merely *suggests* it, so `mergeFromJsonString()` on a message with an
   int field fails without it
 * [Composer](https://getcomposer.org/) 2.x
-* Docker — only to *regenerate* the stubs, never to *use* the client
+* Docker — only to work on this repository (regenerate the stubs, run the tests in the utils image,
+  release), never to *use* the client
 
 Installing the extension:
 
@@ -66,7 +67,7 @@ The client version tracks the ONDEWO S2T API in major and minor version, so pin 
 matches the server you talk to:
 
 ```bash
-composer require ondewo/s2t-client-php:^7.5
+composer require ondewo/s2t-client-php:^7.6
 ```
 
 or, in `composer.json`:
@@ -74,7 +75,7 @@ or, in `composer.json`:
 ```json
 {
   "require": {
-    "ondewo/s2t-client-php": "^7.5"
+    "ondewo/s2t-client-php": "^7.6"
   }
 }
 ```
@@ -111,12 +112,19 @@ make setup_developer_environment_locally
 
 `make help` lists every documented target; `make makefile_chapters` lists the Makefile's sections.
 
+`make setup_developer_environment_locally`, the native `make test` / `make ci` and every other target that calls
+`php`, `composer` or `gh` directly need those tools on your machine. The docker targets need only make, git,
+docker, perl and curl: `make build` generates the stubs in the compiler image, and `make test_via_docker` runs
+the test suite in the utils image (`Dockerfile.utils`: PHP 8.4 with `ext-grpc`, `pcov` and `bcmath`, Composer
+and `gh`). The utils image mounts the repository and runs as your user, so `vendor/` and `build/` land in your
+working tree.
+
 ## Repository structure
 
 ```
 .
 ├── ondewo-s2t-api          <----- submodule: the .proto definitions (ondewo/ = the services, google/ = imports)
-├── ondewo-proto-compiler   <----- submodule: the compiler images, pinned to tags/5.15.1
+├── ondewo-proto-compiler   <----- submodule: the compiler images, pinned to tags/5.17.0
 ├── auth                    <----- HAND-WRITTEN sources (bearer token authenticator, ClientConfig: TLS / mutual TLS)
 ├── src                     <----- GENERATED stubs, committed - compiler-owned, wiped on every generation run
 │   ├── GPBMetadata         <----- descriptor bootstrap, one class per .proto
@@ -132,8 +140,7 @@ make setup_developer_environment_locally
 Three rules follow from that layout and matter more than anything else in this file:
 
 1. **Never put hand-written PHP in `src/`.** It is deleted and rewritten on every generation run. Hand-written
-   code belongs in `auth/` at the repository root — the compiler image detects that directory and adds it to
-   the shipped autoloader's classmap itself.
+   code belongs in `auth/` at the repository root, which `composer.json` autoloads through `autoload.psr-4`.
 2. **Never pin `google/protobuf` or `grpc/grpc` in `composer.json` to anything other than the versions the
    compiler image ships.** The image resolves the merged manifest offline from a cache it pre-warmed at
    image-build time; a pin outside that cache fails the generation run.
@@ -148,13 +155,18 @@ make build
 ```
 
 That is the whole flow, and it is: check out the pinned submodules → build the `ondewo-php-proto-compiler:latest`
-image from the submodule → run it over the protos → hand the generated files back to your user → write the
-client version into `composer.json`.
+image from the submodule → run it over the protos, as your user → write the client version into `composer.json`
+and the README's install snippets.
 
 The generation step on its own is a single container run:
 
 ```bash
 docker run --rm \
+  --user "$(id -u):$(id -g)" \
+  -e HOME=/tmp/home \
+  -e TEMP_SRC_DIRECTORY=/tmp/compile-src \
+  -e COMPOSER_HOME=/tmp/home/.composer \
+  -e COMPOSER_CACHE_READ_ONLY=1 \
   -v $(pwd):/input-volume \
   -v $(pwd):/output-volume \
   ondewo-php-proto-compiler:latest ondewo-s2t-api ondewo
@@ -170,8 +182,11 @@ docker run --rm \
   temporary directory and compiles there, so the mounted input is never mutated; it then writes `composer.json`,
   `composer.lock`, `src/` and `vendor/` back here, wiping its own `src/` and `vendor/` first so a renamed or
   deleted proto leaves no orphaned stub behind.
-* The container runs as root, so the files it writes are root-owned. `make build` chases that with
-  `make fix_generated_ownership`; run it by hand if you invoke docker directly.
+* The image was built to run as root. `--user` makes the files it writes yours, and the `-e` overrides
+  redirect the paths a non-root user cannot write: its staging directory (`TEMP_SRC_DIRECTORY`), `HOME` and
+  `COMPOSER_HOME`, and the pre-warmed composer cache, which is read-only (`COMPOSER_CACHE_READ_ONLY`). The run
+  fails without `TEMP_SRC_DIRECTORY` or `COMPOSER_CACHE_READ_ONLY`. Without `--user` it succeeds, but every
+  file it writes is owned by root.
 
 To poke around inside the image, and only there, `-it` is correct:
 
@@ -348,14 +363,17 @@ A failed handshake ends the call with `$status->code === \Grpc\STATUS_UNAVAILABL
 ## Testing
 
 ```bash
-make ci        # what GitHub Actions runs: no submodules, no docker
-make test      # the same, plus `make check_build` against the ondewo-s2t-api submodule
+make ci                # what GitHub Actions runs: no submodules, no docker
+make test              # the same, plus the Packagist dry run and `make check_build` against the ondewo-s2t-api submodule
+make test_via_docker   # `make test` in the utils image, dependencies included - no host PHP or Composer
 ```
 
-`make ci` is `composer validate` → the credential-free [Packagist dry run](#what-is-verified-without-credentials)
-→ `php -l` over the hand-written sources → PHPUnit with coverage → the coverage threshold gate. It runs on
-PHP 8.2 and 8.4 in GitHub Actions, against the **committed** stubs: no docker image is built and no proto
-compiler runs there.
+`make ci` is `composer validate` → `php -l` over the hand-written sources → PHPUnit with coverage → the
+coverage threshold gate. It runs on PHP 8.2 and 8.4 in GitHub Actions, against the **committed** stubs. That
+workflow (`.github/workflows/ci.yml`) is only a test and lint gate: no docker image is built, no proto compiler
+runs, nothing is packaged or published and no secret is used there. `make test` adds the credential-free
+[Packagist dry run](#what-is-verified-without-credentials) and the stub inventory (`make check_build`); the
+release runs it in the utils image.
 
 What the suite actually asserts:
 
@@ -382,16 +400,56 @@ descriptor initialised by `GeneratedCodeTest`.
 
 `ONDEWO_S2T_VERSION` at the top of the `Makefile` is the single source of truth and **must match
 the ONDEWO S2T API in major and minor version**. `make update_composer_version` propagates it into
-`composer.json`; never edit that field by hand.
+`composer.json` and `make update_readme_version` into the install snippets above (together with the compiler pin
+in the repository tree); never edit either by hand.
+
+A release runs **entirely on the releasing machine**, from one make target. GitHub Actions builds nothing,
+publishes nothing and holds no credential; the credentials exist only in the `ondewo-devops-accounts`
+repository.
 
 ```bash
-# bump ONDEWO_S2T_VERSION and the submodule pins, add a RELEASE.md entry, then:
+# bump ONDEWO_S2T_VERSION and ONDEWO_S2T_API_GIT_BRANCH, add a RELEASE.md entry, then:
 make ondewo_release
 ```
 
-`ondewo_release` checks that the release branch and tag are still free, fetches the credentials from the
-`ondewo-devops-accounts` repository and runs the release: build, commit, release branch, release tag, the
-GitHub release (whose notes are sliced out of `RELEASE.md` by the version heading) and finally `make publish`.
+The ondewo-s2t-api repository's `make release_all_clients` (or `make release_php_client`) does exactly this:
+it clones this repository, rewrites the version and both submodule pins in the `Makefile`, adds the
+`RELEASE.md` entry and runs `make ondewo_release`. In order, `ondewo_release`:
+
+1. writes the version into `composer.json` and this README, and checks that the release branch and tag are
+   still free (`make spc`);
+2. clones `ondewo-devops-accounts` and passes exactly `GITHUB_GH_TOKEN` (`account_github.env`),
+   `PACKAGIST_USERNAME` and `PACKAGIST_API_TOKEN` (`account_packagist.env`) to `make release`;
+3. checks that the three credentials are set (`make check_release_credentials`) and that `RELEASE.md` has
+   notes for the version, then, in the utils image, logs `gh` in with `GITHUB_GH_TOKEN` exactly as step 7 will
+   and asks GitHub, read-only, whether that token may push to this repository
+   (`make validate_release_credentials_via_docker_image`);
+4. builds (pinned submodules, compiler image, stubs), then runs the test suite and the Packagist dry run in
+   the utils image;
+5. commits the release, pushes `master`, and creates and pushes the `release/<version>` branch and the
+   `<version>` tag;
+6. tells Packagist to crawl the new tag (`make publish`, see below);
+7. creates the GitHub release, whose notes are sliced out of `RELEASE.md` by the version heading. It comes
+   **last**, so an existing GitHub release means every step before it succeeded.
+
+Everything that can fail for a build, test, validation or GitHub-credential reason runs before the first push.
+The Packagist token is the exception: Packagist documents no read-only call that accepts it (its only
+authenticated endpoints — update, create and edit a package — all change state), so it is checked for presence
+only, and a wrong token fails the ping in step 6, after the tag. The release then stops before the GitHub
+release. `spc` refuses to run the whole release again, so finish it with the two remaining steps, with the
+corrected credentials in the environment:
+
+```bash
+make publish_via_docker_image RELEASE_TAG=<version>   # needs PACKAGIST_USERNAME and PACKAGIST_API_TOKEN
+make release_to_github_via_docker_image               # needs GITHUB_GH_TOKEN
+```
+
+The release host needs only make, git, docker, perl and curl. The stubs are generated in the compiler image. The
+token check, the tests, the dry run, `make publish` and `gh release create` run in the utils image
+(`Dockerfile.utils`, tagged `ondewo-s2t-client-utils-php:<version>`), which the release builds before the first
+push. Its first build compiles `ext-grpc` from PECL and takes several minutes; later builds reuse docker's layer
+cache. The credentials go into those containers as environment variables, by name, so they never appear on
+docker's command line.
 
 ## Publishing to Packagist
 
@@ -404,46 +462,40 @@ and only the second one is a command:
    `make publish`.
 
 ```bash
-make publish    # validate the package, then POST to https://packagist.org/api/update-package
+make publish                    # validate the package, then POST to https://packagist.org/api/update-package
+make publish_via_docker_image   # the same in the utils image (after `make build_utils_docker_image`)
 ```
 
-`make publish` refuses to run without credentials, then runs the full dry run, then pings the API and fails on
-anything but an HTTP 200 carrying `{"status":"success"}`. It is wired into `make release`, so a normal
-`make ondewo_release` needs no extra step.
+`make publish` refuses to run without credentials, then runs the full dry run, then pings the API. It fails
+unless the answer is HTTP 200 or 202 (Packagist queues the crawl and usually answers 202 Accepted) and carries
+`{"status":"success"}`. It is wired into `make release` through `make publish_via_docker_image`, so a normal
+`make ondewo_release` needs no extra step; run it directly only to finish a release that stopped after its tag
+(see [Versioning and releasing](#versioning-and-releasing)).
 
-### One-time setup (a human, once per package)
-
-None of the automation can do these; they need a browser and ownership of the ONDEWO organisation.
-
-1. **Submit the package once.** Log in to [packagist.org](https://packagist.org/) with the ONDEWO account and
-   use *Submit* with the repository URL `https://github.com/ondewo/ondewo-s2t-client-php`. Packagist reads
-   `composer.json` and claims the vendor namespace `ondewo/` for that account. Until this is done the update
-   API answers **404** for the package and `make publish` fails — deliberately.
-2. **Install the GitHub service hook** (optional but recommended) so a tag push updates Packagist even when a
-   release is made by hand: on Packagist the package page offers the hook URL and token, or use GitHub
-   *Settings → Webhooks* with payload URL `https://packagist.org/api/github?username=<PACKAGIST_USERNAME>`,
-   content type `application/json`, secret = the Packagist API token, event *Just the push event*. The hook
-   and `make publish` do the same job; having both is harmless, having neither means a release is only visible
-   after Packagist's own crawl.
-3. **Store the credentials** — see the table below.
+The package was submitted to Packagist once, by hand, before 7.1.0 — that claimed the `ondewo/` vendor namespace
+for the ONDEWO account. The update API answers **404** for a package that was never submitted, so this would
+only have to be repeated for a new package name.
 
 ### Credentials
 
 | Name | What it is | Where it lives |
 | --- | --- | --- |
-| `PACKAGIST_USERNAME` | the Packagist login name that owns the `ondewo/` vendor namespace | `ondewo-devops-accounts` → `account_packagist.env`, and the GitHub repository secret of the same name |
-| `PACKAGIST_API_TOKEN` | that account's API token, from [packagist.org/profile](https://packagist.org/profile/) → *Show API token* | `ondewo-devops-accounts` → `account_packagist.env`, and the GitHub repository secret of the same name |
-| `GITHUB_GH_TOKEN` | the token `gh release create` authenticates with | `ondewo-devops-accounts` → `account_github.env` (already in use) |
+| `PACKAGIST_USERNAME` | the Packagist login name that owns the `ondewo/` vendor namespace | `ondewo-devops-accounts` → `account_packagist.env` |
+| `PACKAGIST_API_TOKEN` | that account's API token, from [packagist.org/profile](https://packagist.org/profile/) → *Show API token* | `ondewo-devops-accounts` → `account_packagist.env` |
+| `GITHUB_GH_TOKEN` | the token `gh release create` authenticates with; it needs push access to this repository and, as a classic token, the `repo` and `read:org` scopes `gh auth login` insists on | `ondewo-devops-accounts` → `account_github.env` |
 
-Both Packagist variables default to an `ENTER_HERE_YOUR_…` placeholder in the `Makefile` and are only ever
-supplied at runtime — `make ondewo_release` reads them out of the devops-accounts clone, the release workflow
-out of GitHub secrets. Every recipe that carries one is `@`-prefixed so it never reaches a build log, and
+They live nowhere else — not in this repository and not in GitHub. All three default to an `ENTER_…`
+placeholder in the `Makefile` and are only ever supplied at runtime: `make ondewo_release` reads them out of the
+devops-accounts clone with anchored `^NAME=` matches and deletes the clone after a successful release (a failed
+one leaves it in the gitignored `ondewo-devops-accounts/` directory until the next `make clone_devops_accounts`
+replaces it). Every recipe that carries a credential is `@`-prefixed so it never reaches a build log, and
 `make TEST` prints `<set>` / `<unset>` rather than the value.
 
 ### What is verified without credentials
 
-`make packagist_dry_run` is the credential-free half of `make publish` and runs in CI on **every push**
-(`.github/workflows/ci.yml`, and `make ci` locally):
+`make packagist_dry_run` is the credential-free half of `make publish`. It is part of `make test`, so it runs in
+`make test_via_docker` and therefore in `make release` before anything is pushed.
+`make packagist_dry_run_via_docker` runs it alone, in the utils image:
 
 | Check | What it would catch |
 | --- | --- |
@@ -451,10 +503,6 @@ out of GitHub secrets. Every recipe that carries one is `@`-prefixed so it never
 | `composer_validate_strict` | any *new* strict-mode warning — the three deliberate ones (the `version` field and the two exact `google/protobuf` / `grpc/grpc` pins) are enumerated in the `Makefile` and allowed, everything else fails |
 | `check_version_agreement` | `ONDEWO_S2T_VERSION`, `composer.json`'s `name` and `version`, the `RELEASE.md` entry and — on a tag — the tag name drifting apart. A tag that disagrees with the `version` field makes Packagist publish the tree under a version nobody tagged |
 | `check_packagist_payload` | the update request pointing at the wrong repository — the API identifies the package by its VCS url, not by its composer name |
-
-`.github/workflows/release.yml` runs on a `X.Y.Z` tag push and does the same checks plus the full test suite
-before it pings the API. If either secret is missing it fails in its first step with an explicit
-`::error::` naming the secret, rather than posting an unauthenticated request and reporting success.
 
 See [RELEASE.md](RELEASE.md) for the release history and [CONTRIBUTING.md](CONTRIBUTING.md) for how to
 contribute.

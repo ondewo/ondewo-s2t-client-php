@@ -106,9 +106,8 @@ class S2tCloudProviderConfigAmazon extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setEnablePartialResultsStabilization($var)
+    public function setEnablePartialResultsStabilization(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->enable_partial_results_stabilization = $var;
 
         return $this;
@@ -150,9 +149,9 @@ class S2tCloudProviderConfigAmazon extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setPartialResultsStability($var)
+    public function setPartialResultsStability(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->partial_results_stability = $var;
 
         return $this;
@@ -188,9 +187,9 @@ class S2tCloudProviderConfigAmazon extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setLanguageModelName($var)
+    public function setLanguageModelName(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->language_model_name = $var;
 
         return $this;
@@ -226,9 +225,9 @@ class S2tCloudProviderConfigAmazon extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setVocabularyName($var)
+    public function setVocabularyName(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->vocabulary_name = $var;
 
         return $this;

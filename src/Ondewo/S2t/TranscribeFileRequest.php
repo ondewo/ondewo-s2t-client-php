@@ -64,9 +64,9 @@ class TranscribeFileRequest extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setAudioFile($var)
+    public function setAudioFile(string $var)
     {
-        GPBUtil::checkString($var, False);
+        GPBUtil::checkString($var, false);
         $this->audio_file = $var;
 
         return $this;
@@ -100,9 +100,8 @@ class TranscribeFileRequest extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\TranscribeRequestConfig $var
      * @return $this
      */
-    public function setConfig($var)
+    public function setConfig(\Ondewo\S2t\TranscribeRequestConfig|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\TranscribeRequestConfig::class);
         $this->config = $var;
 
         return $this;

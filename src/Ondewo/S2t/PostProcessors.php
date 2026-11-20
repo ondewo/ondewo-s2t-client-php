@@ -82,9 +82,8 @@ class PostProcessors extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\SymSpell $var
      * @return $this
      */
-    public function setSymSpell($var)
+    public function setSymSpell(\Ondewo\S2t\SymSpell|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\SymSpell::class);
         $this->sym_spell = $var;
 
         return $this;
@@ -118,9 +117,8 @@ class PostProcessors extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\S2tNormalization $var
      * @return $this
      */
-    public function setNormalization($var)
+    public function setNormalization(\Ondewo\S2t\S2tNormalization|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\S2tNormalization::class);
         $this->normalization = $var;
 
         return $this;
@@ -154,9 +152,8 @@ class PostProcessors extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\S2tLlmPostProcessing $var
      * @return $this
      */
-    public function setLlmPostProcessing($var)
+    public function setLlmPostProcessing(\Ondewo\S2t\S2tLlmPostProcessing|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\S2tLlmPostProcessing::class);
         $this->llm_post_processing = $var;
 
         return $this;

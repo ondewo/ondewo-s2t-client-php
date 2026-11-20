@@ -173,9 +173,9 @@ class TranscribeRequestConfig extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setS2TPipelineId($var)
+    public function setS2TPipelineId(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->s2t_pipeline_id = $var;
 
         return $this;
@@ -185,7 +185,7 @@ class TranscribeRequestConfig extends \Google\Protobuf\Internal\Message
      * Optional. decoding type
      *
      * Generated from protobuf field <code>.ondewo.s2t.Decoding decoding = 2;</code>
-     * @return int
+     * @return int one of the values in {@see \Ondewo\S2t\Decoding}
      */
     public function getDecoding()
     {
@@ -196,10 +196,10 @@ class TranscribeRequestConfig extends \Google\Protobuf\Internal\Message
      * Optional. decoding type
      *
      * Generated from protobuf field <code>.ondewo.s2t.Decoding decoding = 2;</code>
-     * @param int $var
+     * @param int $var one of the values in {@see \Ondewo\S2t\Decoding}
      * @return $this
      */
-    public function setDecoding($var)
+    public function setDecoding(int $var)
     {
         GPBUtil::checkEnum($var, \Ondewo\S2t\Decoding::class);
         $this->decoding = $var;
@@ -230,9 +230,9 @@ class TranscribeRequestConfig extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setLanguageModelName($var)
+    public function setLanguageModelName(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->writeOneof(3, $var);
 
         return $this;
@@ -261,9 +261,8 @@ class TranscribeRequestConfig extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\PostProcessingOptions $var
      * @return $this
      */
-    public function setPostProcessing($var)
+    public function setPostProcessing(\Ondewo\S2t\PostProcessingOptions|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\PostProcessingOptions::class);
         $this->writeOneof(4, $var);
 
         return $this;
@@ -292,9 +291,8 @@ class TranscribeRequestConfig extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\UtteranceDetectionOptions $var
      * @return $this
      */
-    public function setUtteranceDetection($var)
+    public function setUtteranceDetection(\Ondewo\S2t\UtteranceDetectionOptions|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\UtteranceDetectionOptions::class);
         $this->writeOneof(5, $var);
 
         return $this;
@@ -323,9 +321,8 @@ class TranscribeRequestConfig extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\Pyannote $var
      * @return $this
      */
-    public function setPyannote($var)
+    public function setPyannote(\Ondewo\S2t\Pyannote|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\Pyannote::class);
         $this->writeOneof(6, $var);
 
         return $this;
@@ -354,9 +351,8 @@ class TranscribeRequestConfig extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\TranscriptionReturnOptions $var
      * @return $this
      */
-    public function setReturnOptions($var)
+    public function setReturnOptions(\Ondewo\S2t\TranscriptionReturnOptions|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\TranscriptionReturnOptions::class);
         $this->writeOneof(8, $var);
 
         return $this;
@@ -390,9 +386,9 @@ class TranscribeRequestConfig extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setLanguage($var)
+    public function setLanguage(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->language = $var;
 
         return $this;
@@ -426,9 +422,9 @@ class TranscribeRequestConfig extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setTask($var)
+    public function setTask(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->task = $var;
 
         return $this;
@@ -522,9 +518,8 @@ class TranscribeRequestConfig extends \Google\Protobuf\Internal\Message
      * @param \Google\Protobuf\Struct $var
      * @return $this
      */
-    public function setS2TServiceConfig($var)
+    public function setS2TServiceConfig(\Google\Protobuf\Struct|null $var)
     {
-        GPBUtil::checkMessage($var, \Google\Protobuf\Struct::class);
         $this->s2t_service_config = $var;
 
         return $this;
@@ -560,9 +555,8 @@ class TranscribeRequestConfig extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\S2tCloudProviderConfig $var
      * @return $this
      */
-    public function setS2TCloudProviderConfig($var)
+    public function setS2TCloudProviderConfig(\Ondewo\S2t\S2tCloudProviderConfig|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\S2tCloudProviderConfig::class);
         $this->s2t_cloud_provider_config = $var;
 
         return $this;

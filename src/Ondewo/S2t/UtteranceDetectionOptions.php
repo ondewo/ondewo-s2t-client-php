@@ -22,6 +22,30 @@ class UtteranceDetectionOptions extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>float next_chunk_timeout = 2;</code>
      */
     protected $next_chunk_timeout = 0.0;
+    /**
+     * Optional. The processing chunk of THIS stream, in samples at the pipeline's sampling rate: the server buffers
+     * the incoming audio until it holds this many samples and only then runs the voice-activity search, the sliding
+     * transcription and the turn detector, so it is the cadence at which an utterance can end (8000 samples at
+     * 16 kHz = 0.5 s; 1600 = 0.1 s). Overrides <code>StreamingSpeechRecognition.min_audio_chunk_size</code> of the
+     * pipeline config for this stream only. Allowed: 320 - 32000 (20 ms - 2 s at 16 kHz); a smaller chunk costs
+     * proportionally more voice-activity and transcription requests. Read from the first request of a stream that
+     * carries it; a later request cannot change a running stream's chunk. Unset: the pipeline's value.
+     *
+     * Generated from protobuf field <code>optional int64 min_audio_chunk_size = 4;</code>
+     */
+    protected $min_audio_chunk_size = null;
+    /**
+     * Optional. The minimum new audio, in seconds, between two non-final transcriptions of an utterance (the
+     * partial-transcription cadence; applies only while <code>transcribe_not_final</code> is in force). Overrides
+     * <code>StreamingSpeechRecognition.transcribe_not_final_period_seconds</code> of the pipeline config and the
+     * server setting <code>ONDEWO_S2T_INFERENCE_SLIDING_PERIOD_OF_TRANSCRIPT</code> for this request only. Allowed:
+     * (0, 5]; a shorter period costs proportionally more transcription requests. The server checks the period once
+     * per processing chunk, so the effective cadence is rounded up to whole <code>min_audio_chunk_size</code>
+     * chunks. Unset: the pipeline's value, then the server setting.
+     *
+     * Generated from protobuf field <code>optional float transcribe_not_final_period_seconds = 5;</code>
+     */
+    protected $transcribe_not_final_period_seconds = null;
     protected $oneof_transcribe_not_final;
     protected $oneof_turn_detection;
 
@@ -32,11 +56,30 @@ class UtteranceDetectionOptions extends \Google\Protobuf\Internal\Message
      *     Optional. Data for populating the Message object.
      *
      *     @type bool $transcribe_not_final
-     *           Return also immediate transcription results
+     *           Return also immediate transcription results (non-final transcriptions of an utterance while it is
+     *           still being spoken). Unset: the pipeline's <code>StreamingSpeechRecognition.transcribe_not_final</code>,
+     *           then the server default, which is now <code>true</code>; an explicit <code>false</code> opts this
+     *           request out of non-final results.
      *     @type float $next_chunk_timeout
      *           if time between audio chunks exceeds next_chunk_timeout, stream will be stopped
      *     @type \Ondewo\S2t\TurnDetectionOptions $turn_detection
      *           The turn detection options
+     *     @type int|string $min_audio_chunk_size
+     *           Optional. The processing chunk of THIS stream, in samples at the pipeline's sampling rate: the server buffers
+     *           the incoming audio until it holds this many samples and only then runs the voice-activity search, the sliding
+     *           transcription and the turn detector, so it is the cadence at which an utterance can end (8000 samples at
+     *           16 kHz = 0.5 s; 1600 = 0.1 s). Overrides <code>StreamingSpeechRecognition.min_audio_chunk_size</code> of the
+     *           pipeline config for this stream only. Allowed: 320 - 32000 (20 ms - 2 s at 16 kHz); a smaller chunk costs
+     *           proportionally more voice-activity and transcription requests. Read from the first request of a stream that
+     *           carries it; a later request cannot change a running stream's chunk. Unset: the pipeline's value.
+     *     @type float $transcribe_not_final_period_seconds
+     *           Optional. The minimum new audio, in seconds, between two non-final transcriptions of an utterance (the
+     *           partial-transcription cadence; applies only while <code>transcribe_not_final</code> is in force). Overrides
+     *           <code>StreamingSpeechRecognition.transcribe_not_final_period_seconds</code> of the pipeline config and the
+     *           server setting <code>ONDEWO_S2T_INFERENCE_SLIDING_PERIOD_OF_TRANSCRIPT</code> for this request only. Allowed:
+     *           (0, 5]; a shorter period costs proportionally more transcription requests. The server checks the period once
+     *           per processing chunk, so the effective cadence is rounded up to whole <code>min_audio_chunk_size</code>
+     *           chunks. Unset: the pipeline's value, then the server setting.
      * }
      */
     public function __construct($data = NULL) {
@@ -45,7 +88,10 @@ class UtteranceDetectionOptions extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Return also immediate transcription results
+     * Return also immediate transcription results (non-final transcriptions of an utterance while it is
+     * still being spoken). Unset: the pipeline's <code>StreamingSpeechRecognition.transcribe_not_final</code>,
+     * then the server default, which is now <code>true</code>; an explicit <code>false</code> opts this
+     * request out of non-final results.
      *
      * Generated from protobuf field <code>bool transcribe_not_final = 1;</code>
      * @return bool
@@ -61,15 +107,17 @@ class UtteranceDetectionOptions extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Return also immediate transcription results
+     * Return also immediate transcription results (non-final transcriptions of an utterance while it is
+     * still being spoken). Unset: the pipeline's <code>StreamingSpeechRecognition.transcribe_not_final</code>,
+     * then the server default, which is now <code>true</code>; an explicit <code>false</code> opts this
+     * request out of non-final results.
      *
      * Generated from protobuf field <code>bool transcribe_not_final = 1;</code>
      * @param bool $var
      * @return $this
      */
-    public function setTranscribeNotFinal($var)
+    public function setTranscribeNotFinal(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->writeOneof(1, $var);
 
         return $this;
@@ -93,9 +141,8 @@ class UtteranceDetectionOptions extends \Google\Protobuf\Internal\Message
      * @param float $var
      * @return $this
      */
-    public function setNextChunkTimeout($var)
+    public function setNextChunkTimeout(float $var)
     {
-        GPBUtil::checkFloat($var);
         $this->next_chunk_timeout = $var;
 
         return $this;
@@ -124,10 +171,104 @@ class UtteranceDetectionOptions extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\TurnDetectionOptions $var
      * @return $this
      */
-    public function setTurnDetection($var)
+    public function setTurnDetection(\Ondewo\S2t\TurnDetectionOptions|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\TurnDetectionOptions::class);
         $this->writeOneof(3, $var);
+
+        return $this;
+    }
+
+    /**
+     * Optional. The processing chunk of THIS stream, in samples at the pipeline's sampling rate: the server buffers
+     * the incoming audio until it holds this many samples and only then runs the voice-activity search, the sliding
+     * transcription and the turn detector, so it is the cadence at which an utterance can end (8000 samples at
+     * 16 kHz = 0.5 s; 1600 = 0.1 s). Overrides <code>StreamingSpeechRecognition.min_audio_chunk_size</code> of the
+     * pipeline config for this stream only. Allowed: 320 - 32000 (20 ms - 2 s at 16 kHz); a smaller chunk costs
+     * proportionally more voice-activity and transcription requests. Read from the first request of a stream that
+     * carries it; a later request cannot change a running stream's chunk. Unset: the pipeline's value.
+     *
+     * Generated from protobuf field <code>optional int64 min_audio_chunk_size = 4;</code>
+     * @return int|string
+     */
+    public function getMinAudioChunkSize()
+    {
+        return isset($this->min_audio_chunk_size) ? $this->min_audio_chunk_size : GPBUtil::compatibleInt64(0, '0');
+    }
+
+    public function hasMinAudioChunkSize()
+    {
+        return isset($this->min_audio_chunk_size);
+    }
+
+    public function clearMinAudioChunkSize()
+    {
+        unset($this->min_audio_chunk_size);
+    }
+
+    /**
+     * Optional. The processing chunk of THIS stream, in samples at the pipeline's sampling rate: the server buffers
+     * the incoming audio until it holds this many samples and only then runs the voice-activity search, the sliding
+     * transcription and the turn detector, so it is the cadence at which an utterance can end (8000 samples at
+     * 16 kHz = 0.5 s; 1600 = 0.1 s). Overrides <code>StreamingSpeechRecognition.min_audio_chunk_size</code> of the
+     * pipeline config for this stream only. Allowed: 320 - 32000 (20 ms - 2 s at 16 kHz); a smaller chunk costs
+     * proportionally more voice-activity and transcription requests. Read from the first request of a stream that
+     * carries it; a later request cannot change a running stream's chunk. Unset: the pipeline's value.
+     *
+     * Generated from protobuf field <code>optional int64 min_audio_chunk_size = 4;</code>
+     * @param int|string $var
+     * @return $this
+     */
+    public function setMinAudioChunkSize(int|string $var)
+    {
+        GPBUtil::checkInt64($var);
+        $this->min_audio_chunk_size = $var;
+
+        return $this;
+    }
+
+    /**
+     * Optional. The minimum new audio, in seconds, between two non-final transcriptions of an utterance (the
+     * partial-transcription cadence; applies only while <code>transcribe_not_final</code> is in force). Overrides
+     * <code>StreamingSpeechRecognition.transcribe_not_final_period_seconds</code> of the pipeline config and the
+     * server setting <code>ONDEWO_S2T_INFERENCE_SLIDING_PERIOD_OF_TRANSCRIPT</code> for this request only. Allowed:
+     * (0, 5]; a shorter period costs proportionally more transcription requests. The server checks the period once
+     * per processing chunk, so the effective cadence is rounded up to whole <code>min_audio_chunk_size</code>
+     * chunks. Unset: the pipeline's value, then the server setting.
+     *
+     * Generated from protobuf field <code>optional float transcribe_not_final_period_seconds = 5;</code>
+     * @return float
+     */
+    public function getTranscribeNotFinalPeriodSeconds()
+    {
+        return isset($this->transcribe_not_final_period_seconds) ? $this->transcribe_not_final_period_seconds : 0.0;
+    }
+
+    public function hasTranscribeNotFinalPeriodSeconds()
+    {
+        return isset($this->transcribe_not_final_period_seconds);
+    }
+
+    public function clearTranscribeNotFinalPeriodSeconds()
+    {
+        unset($this->transcribe_not_final_period_seconds);
+    }
+
+    /**
+     * Optional. The minimum new audio, in seconds, between two non-final transcriptions of an utterance (the
+     * partial-transcription cadence; applies only while <code>transcribe_not_final</code> is in force). Overrides
+     * <code>StreamingSpeechRecognition.transcribe_not_final_period_seconds</code> of the pipeline config and the
+     * server setting <code>ONDEWO_S2T_INFERENCE_SLIDING_PERIOD_OF_TRANSCRIPT</code> for this request only. Allowed:
+     * (0, 5]; a shorter period costs proportionally more transcription requests. The server checks the period once
+     * per processing chunk, so the effective cadence is rounded up to whole <code>min_audio_chunk_size</code>
+     * chunks. Unset: the pipeline's value, then the server setting.
+     *
+     * Generated from protobuf field <code>optional float transcribe_not_final_period_seconds = 5;</code>
+     * @param float $var
+     * @return $this
+     */
+    public function setTranscribeNotFinalPeriodSeconds(float $var)
+    {
+        $this->transcribe_not_final_period_seconds = $var;
 
         return $this;
     }

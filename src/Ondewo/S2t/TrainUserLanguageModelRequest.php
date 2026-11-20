@@ -64,9 +64,9 @@ class TrainUserLanguageModelRequest extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setLanguageModelName($var)
+    public function setLanguageModelName(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->language_model_name = $var;
 
         return $this;
@@ -90,7 +90,7 @@ class TrainUserLanguageModelRequest extends \Google\Protobuf\Internal\Message
      * @param int|string $var
      * @return $this
      */
-    public function setOrder($var)
+    public function setOrder(int|string $var)
     {
         GPBUtil::checkInt64($var);
         $this->order = $var;

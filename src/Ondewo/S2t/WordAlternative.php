@@ -64,9 +64,9 @@ class WordAlternative extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setWord($var)
+    public function setWord(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->word = $var;
 
         return $this;
@@ -90,9 +90,8 @@ class WordAlternative extends \Google\Protobuf\Internal\Message
      * @param float $var
      * @return $this
      */
-    public function setConfidence($var)
+    public function setConfidence(float $var)
     {
-        GPBUtil::checkFloat($var);
         $this->confidence = $var;
 
         return $this;

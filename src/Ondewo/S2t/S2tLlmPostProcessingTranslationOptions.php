@@ -82,9 +82,8 @@ class S2tLlmPostProcessingTranslationOptions extends \Google\Protobuf\Internal\M
      * @param bool $var
      * @return $this
      */
-    public function setActive($var)
+    public function setActive(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->active = $var;
 
         return $this;
@@ -118,9 +117,9 @@ class S2tLlmPostProcessingTranslationOptions extends \Google\Protobuf\Internal\M
      * @param string $var
      * @return $this
      */
-    public function setLanguage($var)
+    public function setLanguage(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->language = $var;
 
         return $this;
@@ -154,9 +153,9 @@ class S2tLlmPostProcessingTranslationOptions extends \Google\Protobuf\Internal\M
      * @param string $var
      * @return $this
      */
-    public function setPrompt($var)
+    public function setPrompt(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->prompt = $var;
 
         return $this;

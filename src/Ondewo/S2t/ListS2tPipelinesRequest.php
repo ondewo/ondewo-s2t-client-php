@@ -82,7 +82,7 @@ class ListS2tPipelinesRequest extends \Google\Protobuf\Internal\Message
      * @param string[] $var
      * @return $this
      */
-    public function setLanguages($var)
+    public function setLanguages(array|RepeatedField $var)
     {
         $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::STRING);
         $this->languages = $arr;
@@ -108,7 +108,7 @@ class ListS2tPipelinesRequest extends \Google\Protobuf\Internal\Message
      * @param string[] $var
      * @return $this
      */
-    public function setPipelineOwners($var)
+    public function setPipelineOwners(array|RepeatedField $var)
     {
         $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::STRING);
         $this->pipeline_owners = $arr;
@@ -134,7 +134,7 @@ class ListS2tPipelinesRequest extends \Google\Protobuf\Internal\Message
      * @param string[] $var
      * @return $this
      */
-    public function setDomains($var)
+    public function setDomains(array|RepeatedField $var)
     {
         $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::STRING);
         $this->domains = $arr;
@@ -162,9 +162,8 @@ class ListS2tPipelinesRequest extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setRegisteredOnly($var)
+    public function setRegisteredOnly(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->registered_only = $var;
 
         return $this;

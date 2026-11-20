@@ -90,9 +90,8 @@ class S2tCloudProviderConfig extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\S2tCloudProviderConfigAmazon $var
      * @return $this
      */
-    public function setS2TCloudProviderConfigAmazon($var)
+    public function setS2TCloudProviderConfigAmazon(\Ondewo\S2t\S2tCloudProviderConfigAmazon|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\S2tCloudProviderConfigAmazon::class);
         $this->s2t_cloud_provider_config_amazon = $var;
 
         return $this;
@@ -126,9 +125,8 @@ class S2tCloudProviderConfig extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\S2tCloudProviderConfigDeepgram $var
      * @return $this
      */
-    public function setS2TCloudProviderConfigDeepgram($var)
+    public function setS2TCloudProviderConfigDeepgram(\Ondewo\S2t\S2tCloudProviderConfigDeepgram|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\S2tCloudProviderConfigDeepgram::class);
         $this->s2t_cloud_provider_config_deepgram = $var;
 
         return $this;
@@ -162,9 +160,8 @@ class S2tCloudProviderConfig extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\S2tCloudProviderConfigGoogle $var
      * @return $this
      */
-    public function setS2TCloudProviderConfigGoogle($var)
+    public function setS2TCloudProviderConfigGoogle(\Ondewo\S2t\S2tCloudProviderConfigGoogle|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\S2tCloudProviderConfigGoogle::class);
         $this->s2t_cloud_provider_config_google = $var;
 
         return $this;
@@ -198,9 +195,8 @@ class S2tCloudProviderConfig extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\S2tCloudProviderConfigMicrosoft $var
      * @return $this
      */
-    public function setS2TCloudProviderConfigMicrosoft($var)
+    public function setS2TCloudProviderConfigMicrosoft(\Ondewo\S2t\S2tCloudProviderConfigMicrosoft|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\S2tCloudProviderConfigMicrosoft::class);
         $this->s2t_cloud_provider_config_microsoft = $var;
 
         return $this;

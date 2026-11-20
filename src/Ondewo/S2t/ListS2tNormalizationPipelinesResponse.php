@@ -64,7 +64,7 @@ class ListS2tNormalizationPipelinesResponse extends \Google\Protobuf\Internal\Me
      * @param string[] $var
      * @return $this
      */
-    public function setS2TNormalizationPipelines($var)
+    public function setS2TNormalizationPipelines(array|RepeatedField $var)
     {
         $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::STRING);
         $this->s2t_normalization_pipelines = $arr;

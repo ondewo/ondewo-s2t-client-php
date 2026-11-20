@@ -80,9 +80,9 @@ class S2tCloudServiceMicrosoft extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setLanguage($var)
+    public function setLanguage(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->language = $var;
 
         return $this;
@@ -108,9 +108,8 @@ class S2tCloudServiceMicrosoft extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setUseFastTranscriptionApi($var)
+    public function setUseFastTranscriptionApi(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->use_fast_transcription_api = $var;
 
         return $this;
@@ -136,9 +135,8 @@ class S2tCloudServiceMicrosoft extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setUseDetailedOutputFormat($var)
+    public function setUseDetailedOutputFormat(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->use_detailed_output_format = $var;
 
         return $this;

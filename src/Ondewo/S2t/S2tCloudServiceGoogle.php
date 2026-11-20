@@ -122,9 +122,9 @@ class S2tCloudServiceGoogle extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setModelName($var)
+    public function setModelName(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->model_name = $var;
 
         return $this;
@@ -150,9 +150,9 @@ class S2tCloudServiceGoogle extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setLanguage($var)
+    public function setLanguage(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->language = $var;
 
         return $this;
@@ -178,9 +178,8 @@ class S2tCloudServiceGoogle extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setEnableAutomaticPunctuation($var)
+    public function setEnableAutomaticPunctuation(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->enable_automatic_punctuation = $var;
 
         return $this;
@@ -206,9 +205,8 @@ class S2tCloudServiceGoogle extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setEnableWordTimeOffsets($var)
+    public function setEnableWordTimeOffsets(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->enable_word_time_offsets = $var;
 
         return $this;
@@ -234,9 +232,8 @@ class S2tCloudServiceGoogle extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setEnableWordConfidence($var)
+    public function setEnableWordConfidence(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->enable_word_confidence = $var;
 
         return $this;
@@ -264,9 +261,8 @@ class S2tCloudServiceGoogle extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setTranscriptNormalization($var)
+    public function setTranscriptNormalization(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->transcript_normalization = $var;
 
         return $this;
@@ -292,7 +288,7 @@ class S2tCloudServiceGoogle extends \Google\Protobuf\Internal\Message
      * @param int $var
      * @return $this
      */
-    public function setMaxAlternatives($var)
+    public function setMaxAlternatives(int $var)
     {
         GPBUtil::checkInt32($var);
         $this->max_alternatives = $var;

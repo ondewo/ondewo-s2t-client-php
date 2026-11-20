@@ -136,9 +136,9 @@ class Silero extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setModelName($var)
+    public function setModelName(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->model_name = $var;
 
         return $this;
@@ -162,7 +162,7 @@ class Silero extends \Google\Protobuf\Internal\Message
      * @param int|string $var
      * @return $this
      */
-    public function setMinAudioSize($var)
+    public function setMinAudioSize(int|string $var)
     {
         GPBUtil::checkInt64($var);
         $this->min_audio_size = $var;
@@ -206,9 +206,8 @@ class Silero extends \Google\Protobuf\Internal\Message
      * @param float $var
      * @return $this
      */
-    public function setThreshold($var)
+    public function setThreshold(float $var)
     {
-        GPBUtil::checkFloat($var);
         $this->threshold = $var;
 
         return $this;
@@ -246,9 +245,8 @@ class Silero extends \Google\Protobuf\Internal\Message
      * @param float $var
      * @return $this
      */
-    public function setMinSpeechDurationMs($var)
+    public function setMinSpeechDurationMs(float $var)
     {
-        GPBUtil::checkFloat($var);
         $this->min_speech_duration_ms = $var;
 
         return $this;
@@ -288,9 +286,8 @@ class Silero extends \Google\Protobuf\Internal\Message
      * @param float $var
      * @return $this
      */
-    public function setMinSilenceDurationMs($var)
+    public function setMinSilenceDurationMs(float $var)
     {
-        GPBUtil::checkFloat($var);
         $this->min_silence_duration_ms = $var;
 
         return $this;
@@ -326,9 +323,8 @@ class Silero extends \Google\Protobuf\Internal\Message
      * @param float $var
      * @return $this
      */
-    public function setSpeechPadMs($var)
+    public function setSpeechPadMs(float $var)
     {
-        GPBUtil::checkFloat($var);
         $this->speech_pad_ms = $var;
 
         return $this;
@@ -352,9 +348,9 @@ class Silero extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setTritonServerHost($var)
+    public function setTritonServerHost(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->triton_server_host = $var;
 
         return $this;
@@ -378,7 +374,7 @@ class Silero extends \Google\Protobuf\Internal\Message
      * @param int|string $var
      * @return $this
      */
-    public function setTritonServerPort($var)
+    public function setTritonServerPort(int|string $var)
     {
         GPBUtil::checkInt64($var);
         $this->triton_server_port = $var;

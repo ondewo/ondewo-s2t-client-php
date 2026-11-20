@@ -56,9 +56,9 @@ class DeleteUserLanguageModelRequest extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setLanguageModelName($var)
+    public function setLanguageModelName(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->language_model_name = $var;
 
         return $this;

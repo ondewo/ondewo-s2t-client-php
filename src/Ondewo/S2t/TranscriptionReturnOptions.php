@@ -64,6 +64,18 @@ class TranscriptionReturnOptions extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>bool return_word_timing = 8;</code>
      */
     protected $return_word_timing = false;
+    /**
+     * Optional. Whether the server should send an end-of-speech candidate on a stream (see
+     * <code>TranscribeStreamResponse.end_of_speech_candidate</code> for what is sent and when). Only used in
+     * TranscribeStream, and only acted on under server-side turn detection. Fixed per stream, like
+     * <code>return_start_of_speech</code>: the server completes each request config from the one in effect, so a
+     * later request without <code>return_options</code> keeps it, but a later <code>return_options</code> block
+     * replaces every return option at once and must repeat this field, or the candidate stops for the rest of the
+     * stream. Defaults to false: no candidate is sent, exactly as before this field existed.
+     *
+     * Generated from protobuf field <code>bool return_end_of_speech_candidate = 9;</code>
+     */
+    protected $return_end_of_speech_candidate = false;
 
     /**
      * Constructor.
@@ -87,6 +99,14 @@ class TranscriptionReturnOptions extends \Google\Protobuf\Internal\Message
      *           Optional. Number of alternative words to results
      *     @type bool $return_word_timing
      *           Optional. Whether or not to return timestamps of start and end of the words. Only used in TranscribeFile.
+     *     @type bool $return_end_of_speech_candidate
+     *           Optional. Whether the server should send an end-of-speech candidate on a stream (see
+     *           <code>TranscribeStreamResponse.end_of_speech_candidate</code> for what is sent and when). Only used in
+     *           TranscribeStream, and only acted on under server-side turn detection. Fixed per stream, like
+     *           <code>return_start_of_speech</code>: the server completes each request config from the one in effect, so a
+     *           later request without <code>return_options</code> keeps it, but a later <code>return_options</code> block
+     *           replaces every return option at once and must repeat this field, or the candidate stops for the rest of the
+     *           stream. Defaults to false: no candidate is sent, exactly as before this field existed.
      * }
      */
     public function __construct($data = NULL) {
@@ -112,9 +132,8 @@ class TranscriptionReturnOptions extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setReturnStartOfSpeech($var)
+    public function setReturnStartOfSpeech(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->return_start_of_speech = $var;
 
         return $this;
@@ -138,9 +157,8 @@ class TranscriptionReturnOptions extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setReturnAudio($var)
+    public function setReturnAudio(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->return_audio = $var;
 
         return $this;
@@ -164,9 +182,8 @@ class TranscriptionReturnOptions extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setReturnConfidenceScore($var)
+    public function setReturnConfidenceScore(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->return_confidence_score = $var;
 
         return $this;
@@ -190,9 +207,8 @@ class TranscriptionReturnOptions extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setReturnAlternativeTranscriptions($var)
+    public function setReturnAlternativeTranscriptions(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->return_alternative_transcriptions = $var;
 
         return $this;
@@ -216,7 +232,7 @@ class TranscriptionReturnOptions extends \Google\Protobuf\Internal\Message
      * @param int $var
      * @return $this
      */
-    public function setReturnAlternativeTranscriptionsNr($var)
+    public function setReturnAlternativeTranscriptionsNr(int $var)
     {
         GPBUtil::checkInt32($var);
         $this->return_alternative_transcriptions_nr = $var;
@@ -242,9 +258,8 @@ class TranscriptionReturnOptions extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setReturnAlternativeWords($var)
+    public function setReturnAlternativeWords(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->return_alternative_words = $var;
 
         return $this;
@@ -268,7 +283,7 @@ class TranscriptionReturnOptions extends \Google\Protobuf\Internal\Message
      * @param int $var
      * @return $this
      */
-    public function setReturnAlternativeWordsNr($var)
+    public function setReturnAlternativeWordsNr(int $var)
     {
         GPBUtil::checkInt32($var);
         $this->return_alternative_words_nr = $var;
@@ -294,10 +309,46 @@ class TranscriptionReturnOptions extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setReturnWordTiming($var)
+    public function setReturnWordTiming(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->return_word_timing = $var;
+
+        return $this;
+    }
+
+    /**
+     * Optional. Whether the server should send an end-of-speech candidate on a stream (see
+     * <code>TranscribeStreamResponse.end_of_speech_candidate</code> for what is sent and when). Only used in
+     * TranscribeStream, and only acted on under server-side turn detection. Fixed per stream, like
+     * <code>return_start_of_speech</code>: the server completes each request config from the one in effect, so a
+     * later request without <code>return_options</code> keeps it, but a later <code>return_options</code> block
+     * replaces every return option at once and must repeat this field, or the candidate stops for the rest of the
+     * stream. Defaults to false: no candidate is sent, exactly as before this field existed.
+     *
+     * Generated from protobuf field <code>bool return_end_of_speech_candidate = 9;</code>
+     * @return bool
+     */
+    public function getReturnEndOfSpeechCandidate()
+    {
+        return $this->return_end_of_speech_candidate;
+    }
+
+    /**
+     * Optional. Whether the server should send an end-of-speech candidate on a stream (see
+     * <code>TranscribeStreamResponse.end_of_speech_candidate</code> for what is sent and when). Only used in
+     * TranscribeStream, and only acted on under server-side turn detection. Fixed per stream, like
+     * <code>return_start_of_speech</code>: the server completes each request config from the one in effect, so a
+     * later request without <code>return_options</code> keeps it, but a later <code>return_options</code> block
+     * replaces every return option at once and must repeat this field, or the candidate stops for the rest of the
+     * stream. Defaults to false: no candidate is sent, exactly as before this field existed.
+     *
+     * Generated from protobuf field <code>bool return_end_of_speech_candidate = 9;</code>
+     * @param bool $var
+     * @return $this
+     */
+    public function setReturnEndOfSpeechCandidate(bool $var)
+    {
+        $this->return_end_of_speech_candidate = $var;
 
         return $this;
     }

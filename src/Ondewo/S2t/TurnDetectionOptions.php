@@ -10,7 +10,14 @@ use Google\Protobuf\Internal\GPBUtil;
 use Google\Protobuf\RepeatedField;
 
 /**
- * <p>Configuration of the options to turn-detection in utterances</p>
+ * <p>TurnDetectionOptions configures turn detection: deciding, at a pause of the caller, whether the caller has
+ * finished the turn. Exactly one turn detector is chosen by <code>oneof_turn_detector</code>; the fields outside it
+ * apply to every detector.</p>
+ * <p>Precedence for every field: the request config's value
+ * (<code>TranscribeRequestConfig.utterance_detection.turn_detection</code>), then the pipeline config's value
+ * (<code>StreamingSpeechRecognition.turn_detection</code>), then the server's configured value. When the request
+ * config chooses a different detector than the pipeline config, the request config's detector is used with only
+ * its own fields: none of the pipeline config's detector fields carry over.</p>
  *
  * Generated from protobuf message <code>ondewo.s2t.TurnDetectionOptions</code>
  */
@@ -23,31 +30,70 @@ class TurnDetectionOptions extends \Google\Protobuf\Internal\Message
      */
     protected $active = null;
     /**
-     * Optional. Whether to transcribe the whole utterance when turn moment is detected. It is helpful to increase
-     * accuracy of transcriptions in cost of drop in speed. If deactivated, it just transcribe from last short silence
-     * period and concatenates the transcriptions of small audio chunks between tiny silences.
+     * Optional. Whether to transcribe the whole utterance when the end of a turn is detected. It increases the
+     * accuracy of the transcription at the cost of speed. If deactivated, only the audio after the last short
+     * silence is transcribed and the transcriptions of the short audio chunks between silences are concatenated.
      *
      * Generated from protobuf field <code>optional bool full_utterance_deployment = 2;</code>
      */
     protected $full_utterance_deployment = null;
     /**
-     * Optional. System prompt used to guide the turn-detection model.
+     * Optional. Deprecated in favour of <code>turn_detection_chat_llm_options.system_prompt</code>, but still
+     * honoured so that configurations written for ondewo-s2t-api 7.5.0 and earlier keep working unchanged. Read
+     * only when <code>oneof_turn_detector</code> is not set.
      *
-     * Generated from protobuf field <code>optional string turn_detection_system_prompt = 3;</code>
+     * Generated from protobuf field <code>optional string turn_detection_system_prompt = 3 [deprecated = true];</code>
+     * @deprecated
      */
     protected $turn_detection_system_prompt = null;
     /**
-     * Optional. User prompt used as input to the turn-detection model.
+     * Optional. Deprecated in favour of <code>turn_detection_chat_llm_options.user_prompt</code>, but still
+     * honoured. Read only when <code>oneof_turn_detector</code> is not set.
      *
-     * Generated from protobuf field <code>optional string turn_detection_user_prompt = 4;</code>
+     * Generated from protobuf field <code>optional string turn_detection_user_prompt = 4 [deprecated = true];</code>
+     * @deprecated
      */
     protected $turn_detection_user_prompt = null;
     /**
-     * Optional. Configuration options for the OpenAI client used for turn detection.
+     * Optional. Deprecated in favour of <code>oneof_turn_detector</code>, but still honoured. Read only when
+     * <code>oneof_turn_detector</code> is not set; its <code>model</code> then selects the detector by its name, as
+     * before <code>oneof_turn_detector</code> existed: a name starting with <code>pipecat-smart-turn</code> selects
+     * pipecat Smart Turn, one starting with <code>ondewo-s2t-model-de-vad-tsd-ondewo-qwen3</code> the ONDEWO German
+     * turn-detection model, one starting with <code>ondewo-s2t-model-de-fusion-turn-detection</code> the ONDEWO
+     * German fusion turn detector, and any other name a chat LLM or an end-of-utterance LLM. A name starting with
+     * <code>pipecat-</code> or <code>ondewo-s2t-model-</code> that matches none of these is refused with
+     * INVALID_ARGUMENT. On this path every detector-specific value is the server's configured value.
      *
-     * Generated from protobuf field <code>optional .ondewo.s2t.OpenaiLlmOptions turn_detection_llm_openai_options = 5;</code>
+     * Generated from protobuf field <code>optional .ondewo.s2t.OpenaiLlmOptions turn_detection_llm_openai_options = 5 [deprecated = true];</code>
+     * @deprecated
      */
     protected $turn_detection_llm_openai_options = null;
+    /**
+     * Optional. Seconds of silence after an utterance judged NOT finished before it is finished anyway, valid
+     * range: 0 - 4. The server raises a value below the voice activity detection's <code>min_duration_off</code>
+     * to it. Unset = the server's configured value (default: the <code>min_duration_off</code> in use). Applies to
+     * every "not finished" verdict, whichever detector gave it, including a verdict that did not arrive in time.
+     *
+     * Generated from protobuf field <code>optional float incomplete_max_silence_seconds = 6;</code>
+     */
+    protected $incomplete_max_silence_seconds = null;
+    /**
+     * Optional. The latest turns of the conversation before the caller's utterance under evaluation, handed to the
+     * end-of-utterance LLM as preceding chat turns so that it can judge the utterance against what was said
+     * before, e.g. a bare number answering a question for a number. Kept outside <code>oneof_turn_detector</code>
+     * because it is conversation data, not detector configuration: the server keeps it per stream, a request
+     * whose turn detection carries this field replaces it, an empty wrapper (no turns) clears it, and a request
+     * without it keeps it. That is why it is a wrapper: the server merges request configs per whole top-level
+     * field, so a field it did not store itself could not survive a later request that carries turn detection
+     * without it. The server caps the number of turns and the length of each turn. Unset or empty: the utterance
+     * is judged alone. Read only by <code>turn_detection_end_of_utterance_llm_options</code>; ignored by every
+     * other detector. Honoured only in a request config; ignored in a pipeline config, where a per-stream context
+     * has no meaning.
+     *
+     * Generated from protobuf field <code>optional .ondewo.s2t.TurnDetectionConversationContext turn_detection_conversation_context = 7;</code>
+     */
+    protected $turn_detection_conversation_context = null;
+    protected $oneof_turn_detector;
 
     /**
      * Constructor.
@@ -58,15 +104,53 @@ class TurnDetectionOptions extends \Google\Protobuf\Internal\Message
      *     @type bool $active
      *           Optional. Indicates if the turn-detection feature is active.
      *     @type bool $full_utterance_deployment
-     *           Optional. Whether to transcribe the whole utterance when turn moment is detected. It is helpful to increase
-     *           accuracy of transcriptions in cost of drop in speed. If deactivated, it just transcribe from last short silence
-     *           period and concatenates the transcriptions of small audio chunks between tiny silences.
+     *           Optional. Whether to transcribe the whole utterance when the end of a turn is detected. It increases the
+     *           accuracy of the transcription at the cost of speed. If deactivated, only the audio after the last short
+     *           silence is transcribed and the transcriptions of the short audio chunks between silences are concatenated.
      *     @type string $turn_detection_system_prompt
-     *           Optional. System prompt used to guide the turn-detection model.
+     *           Optional. Deprecated in favour of <code>turn_detection_chat_llm_options.system_prompt</code>, but still
+     *           honoured so that configurations written for ondewo-s2t-api 7.5.0 and earlier keep working unchanged. Read
+     *           only when <code>oneof_turn_detector</code> is not set.
      *     @type string $turn_detection_user_prompt
-     *           Optional. User prompt used as input to the turn-detection model.
+     *           Optional. Deprecated in favour of <code>turn_detection_chat_llm_options.user_prompt</code>, but still
+     *           honoured. Read only when <code>oneof_turn_detector</code> is not set.
      *     @type \Ondewo\S2t\OpenaiLlmOptions $turn_detection_llm_openai_options
-     *           Optional. Configuration options for the OpenAI client used for turn detection.
+     *           Optional. Deprecated in favour of <code>oneof_turn_detector</code>, but still honoured. Read only when
+     *           <code>oneof_turn_detector</code> is not set; its <code>model</code> then selects the detector by its name, as
+     *           before <code>oneof_turn_detector</code> existed: a name starting with <code>pipecat-smart-turn</code> selects
+     *           pipecat Smart Turn, one starting with <code>ondewo-s2t-model-de-vad-tsd-ondewo-qwen3</code> the ONDEWO German
+     *           turn-detection model, one starting with <code>ondewo-s2t-model-de-fusion-turn-detection</code> the ONDEWO
+     *           German fusion turn detector, and any other name a chat LLM or an end-of-utterance LLM. A name starting with
+     *           <code>pipecat-</code> or <code>ondewo-s2t-model-</code> that matches none of these is refused with
+     *           INVALID_ARGUMENT. On this path every detector-specific value is the server's configured value.
+     *     @type float $incomplete_max_silence_seconds
+     *           Optional. Seconds of silence after an utterance judged NOT finished before it is finished anyway, valid
+     *           range: 0 - 4. The server raises a value below the voice activity detection's <code>min_duration_off</code>
+     *           to it. Unset = the server's configured value (default: the <code>min_duration_off</code> in use). Applies to
+     *           every "not finished" verdict, whichever detector gave it, including a verdict that did not arrive in time.
+     *     @type \Ondewo\S2t\TurnDetectionConversationContext $turn_detection_conversation_context
+     *           Optional. The latest turns of the conversation before the caller's utterance under evaluation, handed to the
+     *           end-of-utterance LLM as preceding chat turns so that it can judge the utterance against what was said
+     *           before, e.g. a bare number answering a question for a number. Kept outside <code>oneof_turn_detector</code>
+     *           because it is conversation data, not detector configuration: the server keeps it per stream, a request
+     *           whose turn detection carries this field replaces it, an empty wrapper (no turns) clears it, and a request
+     *           without it keeps it. That is why it is a wrapper: the server merges request configs per whole top-level
+     *           field, so a field it did not store itself could not survive a later request that carries turn detection
+     *           without it. The server caps the number of turns and the length of each turn. Unset or empty: the utterance
+     *           is judged alone. Read only by <code>turn_detection_end_of_utterance_llm_options</code>; ignored by every
+     *           other detector. Honoured only in a request config; ignored in a pipeline config, where a per-stream context
+     *           has no meaning.
+     *     @type \Ondewo\S2t\TurnDetectionChatLlmOptions $turn_detection_chat_llm_options
+     *           A chat LLM asked, with a prompt, whether the caller has finished the turn.
+     *     @type \Ondewo\S2t\TurnDetectionEndOfUtteranceLlmOptions $turn_detection_end_of_utterance_llm_options
+     *           An end-of-utterance LLM (LiveKit-shaped) that scores the probability of the end-of-utterance token.
+     *     @type \Ondewo\S2t\TurnDetectionOndewoDeOptions $turn_detection_ondewo_de_options
+     *           The ONDEWO German turn-detection model: the turn's text and timing, served by vLLM.
+     *     @type \Ondewo\S2t\TurnDetectionOndewoDeFusionOptions $turn_detection_ondewo_de_fusion_options
+     *           The ONDEWO German fusion turn detector: the ONDEWO German text model on vLLM plus acoustic heads on
+     *           Triton, combined into one end-of-turn probability.
+     *     @type \Ondewo\S2t\TurnDetectionPipecatSmartTurnOptions $turn_detection_pipecat_smart_turn_options
+     *           pipecat Smart Turn v3.2: audio only, served by Triton.
      * }
      */
     public function __construct($data = NULL) {
@@ -102,18 +186,17 @@ class TurnDetectionOptions extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setActive($var)
+    public function setActive(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->active = $var;
 
         return $this;
     }
 
     /**
-     * Optional. Whether to transcribe the whole utterance when turn moment is detected. It is helpful to increase
-     * accuracy of transcriptions in cost of drop in speed. If deactivated, it just transcribe from last short silence
-     * period and concatenates the transcriptions of small audio chunks between tiny silences.
+     * Optional. Whether to transcribe the whole utterance when the end of a turn is detected. It increases the
+     * accuracy of the transcription at the cost of speed. If deactivated, only the audio after the last short
+     * silence is transcribed and the transcriptions of the short audio chunks between silences are concatenated.
      *
      * Generated from protobuf field <code>optional bool full_utterance_deployment = 2;</code>
      * @return bool
@@ -134,128 +217,432 @@ class TurnDetectionOptions extends \Google\Protobuf\Internal\Message
     }
 
     /**
-     * Optional. Whether to transcribe the whole utterance when turn moment is detected. It is helpful to increase
-     * accuracy of transcriptions in cost of drop in speed. If deactivated, it just transcribe from last short silence
-     * period and concatenates the transcriptions of small audio chunks between tiny silences.
+     * Optional. Whether to transcribe the whole utterance when the end of a turn is detected. It increases the
+     * accuracy of the transcription at the cost of speed. If deactivated, only the audio after the last short
+     * silence is transcribed and the transcriptions of the short audio chunks between silences are concatenated.
      *
      * Generated from protobuf field <code>optional bool full_utterance_deployment = 2;</code>
      * @param bool $var
      * @return $this
      */
-    public function setFullUtteranceDeployment($var)
+    public function setFullUtteranceDeployment(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->full_utterance_deployment = $var;
 
         return $this;
     }
 
     /**
-     * Optional. System prompt used to guide the turn-detection model.
+     * Optional. Deprecated in favour of <code>turn_detection_chat_llm_options.system_prompt</code>, but still
+     * honoured so that configurations written for ondewo-s2t-api 7.5.0 and earlier keep working unchanged. Read
+     * only when <code>oneof_turn_detector</code> is not set.
      *
-     * Generated from protobuf field <code>optional string turn_detection_system_prompt = 3;</code>
+     * Generated from protobuf field <code>optional string turn_detection_system_prompt = 3 [deprecated = true];</code>
      * @return string
+     * @deprecated
      */
     public function getTurnDetectionSystemPrompt()
     {
+        if (isset($this->turn_detection_system_prompt)) {
+            @trigger_error('turn_detection_system_prompt is deprecated.', E_USER_DEPRECATED);
+        }
         return isset($this->turn_detection_system_prompt) ? $this->turn_detection_system_prompt : '';
     }
 
     public function hasTurnDetectionSystemPrompt()
     {
+        if (isset($this->turn_detection_system_prompt)) {
+            @trigger_error('turn_detection_system_prompt is deprecated.', E_USER_DEPRECATED);
+        }
         return isset($this->turn_detection_system_prompt);
     }
 
     public function clearTurnDetectionSystemPrompt()
     {
+        @trigger_error('turn_detection_system_prompt is deprecated.', E_USER_DEPRECATED);
         unset($this->turn_detection_system_prompt);
     }
 
     /**
-     * Optional. System prompt used to guide the turn-detection model.
+     * Optional. Deprecated in favour of <code>turn_detection_chat_llm_options.system_prompt</code>, but still
+     * honoured so that configurations written for ondewo-s2t-api 7.5.0 and earlier keep working unchanged. Read
+     * only when <code>oneof_turn_detector</code> is not set.
      *
-     * Generated from protobuf field <code>optional string turn_detection_system_prompt = 3;</code>
+     * Generated from protobuf field <code>optional string turn_detection_system_prompt = 3 [deprecated = true];</code>
      * @param string $var
      * @return $this
+     * @deprecated
      */
-    public function setTurnDetectionSystemPrompt($var)
+    public function setTurnDetectionSystemPrompt(string $var)
     {
-        GPBUtil::checkString($var, True);
+        @trigger_error('turn_detection_system_prompt is deprecated.', E_USER_DEPRECATED);
+        GPBUtil::checkString($var, true);
         $this->turn_detection_system_prompt = $var;
 
         return $this;
     }
 
     /**
-     * Optional. User prompt used as input to the turn-detection model.
+     * Optional. Deprecated in favour of <code>turn_detection_chat_llm_options.user_prompt</code>, but still
+     * honoured. Read only when <code>oneof_turn_detector</code> is not set.
      *
-     * Generated from protobuf field <code>optional string turn_detection_user_prompt = 4;</code>
+     * Generated from protobuf field <code>optional string turn_detection_user_prompt = 4 [deprecated = true];</code>
      * @return string
+     * @deprecated
      */
     public function getTurnDetectionUserPrompt()
     {
+        if (isset($this->turn_detection_user_prompt)) {
+            @trigger_error('turn_detection_user_prompt is deprecated.', E_USER_DEPRECATED);
+        }
         return isset($this->turn_detection_user_prompt) ? $this->turn_detection_user_prompt : '';
     }
 
     public function hasTurnDetectionUserPrompt()
     {
+        if (isset($this->turn_detection_user_prompt)) {
+            @trigger_error('turn_detection_user_prompt is deprecated.', E_USER_DEPRECATED);
+        }
         return isset($this->turn_detection_user_prompt);
     }
 
     public function clearTurnDetectionUserPrompt()
     {
+        @trigger_error('turn_detection_user_prompt is deprecated.', E_USER_DEPRECATED);
         unset($this->turn_detection_user_prompt);
     }
 
     /**
-     * Optional. User prompt used as input to the turn-detection model.
+     * Optional. Deprecated in favour of <code>turn_detection_chat_llm_options.user_prompt</code>, but still
+     * honoured. Read only when <code>oneof_turn_detector</code> is not set.
      *
-     * Generated from protobuf field <code>optional string turn_detection_user_prompt = 4;</code>
+     * Generated from protobuf field <code>optional string turn_detection_user_prompt = 4 [deprecated = true];</code>
      * @param string $var
      * @return $this
+     * @deprecated
      */
-    public function setTurnDetectionUserPrompt($var)
+    public function setTurnDetectionUserPrompt(string $var)
     {
-        GPBUtil::checkString($var, True);
+        @trigger_error('turn_detection_user_prompt is deprecated.', E_USER_DEPRECATED);
+        GPBUtil::checkString($var, true);
         $this->turn_detection_user_prompt = $var;
 
         return $this;
     }
 
     /**
-     * Optional. Configuration options for the OpenAI client used for turn detection.
+     * Optional. Deprecated in favour of <code>oneof_turn_detector</code>, but still honoured. Read only when
+     * <code>oneof_turn_detector</code> is not set; its <code>model</code> then selects the detector by its name, as
+     * before <code>oneof_turn_detector</code> existed: a name starting with <code>pipecat-smart-turn</code> selects
+     * pipecat Smart Turn, one starting with <code>ondewo-s2t-model-de-vad-tsd-ondewo-qwen3</code> the ONDEWO German
+     * turn-detection model, one starting with <code>ondewo-s2t-model-de-fusion-turn-detection</code> the ONDEWO
+     * German fusion turn detector, and any other name a chat LLM or an end-of-utterance LLM. A name starting with
+     * <code>pipecat-</code> or <code>ondewo-s2t-model-</code> that matches none of these is refused with
+     * INVALID_ARGUMENT. On this path every detector-specific value is the server's configured value.
      *
-     * Generated from protobuf field <code>optional .ondewo.s2t.OpenaiLlmOptions turn_detection_llm_openai_options = 5;</code>
+     * Generated from protobuf field <code>optional .ondewo.s2t.OpenaiLlmOptions turn_detection_llm_openai_options = 5 [deprecated = true];</code>
      * @return \Ondewo\S2t\OpenaiLlmOptions|null
+     * @deprecated
      */
     public function getTurnDetectionLlmOpenaiOptions()
     {
+        if (isset($this->turn_detection_llm_openai_options)) {
+            @trigger_error('turn_detection_llm_openai_options is deprecated.', E_USER_DEPRECATED);
+        }
         return $this->turn_detection_llm_openai_options;
     }
 
     public function hasTurnDetectionLlmOpenaiOptions()
     {
+        if (isset($this->turn_detection_llm_openai_options)) {
+            @trigger_error('turn_detection_llm_openai_options is deprecated.', E_USER_DEPRECATED);
+        }
         return isset($this->turn_detection_llm_openai_options);
     }
 
     public function clearTurnDetectionLlmOpenaiOptions()
     {
+        @trigger_error('turn_detection_llm_openai_options is deprecated.', E_USER_DEPRECATED);
         unset($this->turn_detection_llm_openai_options);
     }
 
     /**
-     * Optional. Configuration options for the OpenAI client used for turn detection.
+     * Optional. Deprecated in favour of <code>oneof_turn_detector</code>, but still honoured. Read only when
+     * <code>oneof_turn_detector</code> is not set; its <code>model</code> then selects the detector by its name, as
+     * before <code>oneof_turn_detector</code> existed: a name starting with <code>pipecat-smart-turn</code> selects
+     * pipecat Smart Turn, one starting with <code>ondewo-s2t-model-de-vad-tsd-ondewo-qwen3</code> the ONDEWO German
+     * turn-detection model, one starting with <code>ondewo-s2t-model-de-fusion-turn-detection</code> the ONDEWO
+     * German fusion turn detector, and any other name a chat LLM or an end-of-utterance LLM. A name starting with
+     * <code>pipecat-</code> or <code>ondewo-s2t-model-</code> that matches none of these is refused with
+     * INVALID_ARGUMENT. On this path every detector-specific value is the server's configured value.
      *
-     * Generated from protobuf field <code>optional .ondewo.s2t.OpenaiLlmOptions turn_detection_llm_openai_options = 5;</code>
+     * Generated from protobuf field <code>optional .ondewo.s2t.OpenaiLlmOptions turn_detection_llm_openai_options = 5 [deprecated = true];</code>
      * @param \Ondewo\S2t\OpenaiLlmOptions $var
      * @return $this
+     * @deprecated
      */
-    public function setTurnDetectionLlmOpenaiOptions($var)
+    public function setTurnDetectionLlmOpenaiOptions(\Ondewo\S2t\OpenaiLlmOptions|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\OpenaiLlmOptions::class);
+        @trigger_error('turn_detection_llm_openai_options is deprecated.', E_USER_DEPRECATED);
         $this->turn_detection_llm_openai_options = $var;
 
         return $this;
+    }
+
+    /**
+     * Optional. Seconds of silence after an utterance judged NOT finished before it is finished anyway, valid
+     * range: 0 - 4. The server raises a value below the voice activity detection's <code>min_duration_off</code>
+     * to it. Unset = the server's configured value (default: the <code>min_duration_off</code> in use). Applies to
+     * every "not finished" verdict, whichever detector gave it, including a verdict that did not arrive in time.
+     *
+     * Generated from protobuf field <code>optional float incomplete_max_silence_seconds = 6;</code>
+     * @return float
+     */
+    public function getIncompleteMaxSilenceSeconds()
+    {
+        return isset($this->incomplete_max_silence_seconds) ? $this->incomplete_max_silence_seconds : 0.0;
+    }
+
+    public function hasIncompleteMaxSilenceSeconds()
+    {
+        return isset($this->incomplete_max_silence_seconds);
+    }
+
+    public function clearIncompleteMaxSilenceSeconds()
+    {
+        unset($this->incomplete_max_silence_seconds);
+    }
+
+    /**
+     * Optional. Seconds of silence after an utterance judged NOT finished before it is finished anyway, valid
+     * range: 0 - 4. The server raises a value below the voice activity detection's <code>min_duration_off</code>
+     * to it. Unset = the server's configured value (default: the <code>min_duration_off</code> in use). Applies to
+     * every "not finished" verdict, whichever detector gave it, including a verdict that did not arrive in time.
+     *
+     * Generated from protobuf field <code>optional float incomplete_max_silence_seconds = 6;</code>
+     * @param float $var
+     * @return $this
+     */
+    public function setIncompleteMaxSilenceSeconds(float $var)
+    {
+        $this->incomplete_max_silence_seconds = $var;
+
+        return $this;
+    }
+
+    /**
+     * Optional. The latest turns of the conversation before the caller's utterance under evaluation, handed to the
+     * end-of-utterance LLM as preceding chat turns so that it can judge the utterance against what was said
+     * before, e.g. a bare number answering a question for a number. Kept outside <code>oneof_turn_detector</code>
+     * because it is conversation data, not detector configuration: the server keeps it per stream, a request
+     * whose turn detection carries this field replaces it, an empty wrapper (no turns) clears it, and a request
+     * without it keeps it. That is why it is a wrapper: the server merges request configs per whole top-level
+     * field, so a field it did not store itself could not survive a later request that carries turn detection
+     * without it. The server caps the number of turns and the length of each turn. Unset or empty: the utterance
+     * is judged alone. Read only by <code>turn_detection_end_of_utterance_llm_options</code>; ignored by every
+     * other detector. Honoured only in a request config; ignored in a pipeline config, where a per-stream context
+     * has no meaning.
+     *
+     * Generated from protobuf field <code>optional .ondewo.s2t.TurnDetectionConversationContext turn_detection_conversation_context = 7;</code>
+     * @return \Ondewo\S2t\TurnDetectionConversationContext|null
+     */
+    public function getTurnDetectionConversationContext()
+    {
+        return $this->turn_detection_conversation_context;
+    }
+
+    public function hasTurnDetectionConversationContext()
+    {
+        return isset($this->turn_detection_conversation_context);
+    }
+
+    public function clearTurnDetectionConversationContext()
+    {
+        unset($this->turn_detection_conversation_context);
+    }
+
+    /**
+     * Optional. The latest turns of the conversation before the caller's utterance under evaluation, handed to the
+     * end-of-utterance LLM as preceding chat turns so that it can judge the utterance against what was said
+     * before, e.g. a bare number answering a question for a number. Kept outside <code>oneof_turn_detector</code>
+     * because it is conversation data, not detector configuration: the server keeps it per stream, a request
+     * whose turn detection carries this field replaces it, an empty wrapper (no turns) clears it, and a request
+     * without it keeps it. That is why it is a wrapper: the server merges request configs per whole top-level
+     * field, so a field it did not store itself could not survive a later request that carries turn detection
+     * without it. The server caps the number of turns and the length of each turn. Unset or empty: the utterance
+     * is judged alone. Read only by <code>turn_detection_end_of_utterance_llm_options</code>; ignored by every
+     * other detector. Honoured only in a request config; ignored in a pipeline config, where a per-stream context
+     * has no meaning.
+     *
+     * Generated from protobuf field <code>optional .ondewo.s2t.TurnDetectionConversationContext turn_detection_conversation_context = 7;</code>
+     * @param \Ondewo\S2t\TurnDetectionConversationContext $var
+     * @return $this
+     */
+    public function setTurnDetectionConversationContext(\Ondewo\S2t\TurnDetectionConversationContext|null $var)
+    {
+        $this->turn_detection_conversation_context = $var;
+
+        return $this;
+    }
+
+    /**
+     * A chat LLM asked, with a prompt, whether the caller has finished the turn.
+     *
+     * Generated from protobuf field <code>.ondewo.s2t.TurnDetectionChatLlmOptions turn_detection_chat_llm_options = 8;</code>
+     * @return \Ondewo\S2t\TurnDetectionChatLlmOptions|null
+     */
+    public function getTurnDetectionChatLlmOptions()
+    {
+        return $this->readOneof(8);
+    }
+
+    public function hasTurnDetectionChatLlmOptions()
+    {
+        return $this->hasOneof(8);
+    }
+
+    /**
+     * A chat LLM asked, with a prompt, whether the caller has finished the turn.
+     *
+     * Generated from protobuf field <code>.ondewo.s2t.TurnDetectionChatLlmOptions turn_detection_chat_llm_options = 8;</code>
+     * @param \Ondewo\S2t\TurnDetectionChatLlmOptions $var
+     * @return $this
+     */
+    public function setTurnDetectionChatLlmOptions(\Ondewo\S2t\TurnDetectionChatLlmOptions|null $var)
+    {
+        $this->writeOneof(8, $var);
+
+        return $this;
+    }
+
+    /**
+     * An end-of-utterance LLM (LiveKit-shaped) that scores the probability of the end-of-utterance token.
+     *
+     * Generated from protobuf field <code>.ondewo.s2t.TurnDetectionEndOfUtteranceLlmOptions turn_detection_end_of_utterance_llm_options = 9;</code>
+     * @return \Ondewo\S2t\TurnDetectionEndOfUtteranceLlmOptions|null
+     */
+    public function getTurnDetectionEndOfUtteranceLlmOptions()
+    {
+        return $this->readOneof(9);
+    }
+
+    public function hasTurnDetectionEndOfUtteranceLlmOptions()
+    {
+        return $this->hasOneof(9);
+    }
+
+    /**
+     * An end-of-utterance LLM (LiveKit-shaped) that scores the probability of the end-of-utterance token.
+     *
+     * Generated from protobuf field <code>.ondewo.s2t.TurnDetectionEndOfUtteranceLlmOptions turn_detection_end_of_utterance_llm_options = 9;</code>
+     * @param \Ondewo\S2t\TurnDetectionEndOfUtteranceLlmOptions $var
+     * @return $this
+     */
+    public function setTurnDetectionEndOfUtteranceLlmOptions(\Ondewo\S2t\TurnDetectionEndOfUtteranceLlmOptions|null $var)
+    {
+        $this->writeOneof(9, $var);
+
+        return $this;
+    }
+
+    /**
+     * The ONDEWO German turn-detection model: the turn's text and timing, served by vLLM.
+     *
+     * Generated from protobuf field <code>.ondewo.s2t.TurnDetectionOndewoDeOptions turn_detection_ondewo_de_options = 10;</code>
+     * @return \Ondewo\S2t\TurnDetectionOndewoDeOptions|null
+     */
+    public function getTurnDetectionOndewoDeOptions()
+    {
+        return $this->readOneof(10);
+    }
+
+    public function hasTurnDetectionOndewoDeOptions()
+    {
+        return $this->hasOneof(10);
+    }
+
+    /**
+     * The ONDEWO German turn-detection model: the turn's text and timing, served by vLLM.
+     *
+     * Generated from protobuf field <code>.ondewo.s2t.TurnDetectionOndewoDeOptions turn_detection_ondewo_de_options = 10;</code>
+     * @param \Ondewo\S2t\TurnDetectionOndewoDeOptions $var
+     * @return $this
+     */
+    public function setTurnDetectionOndewoDeOptions(\Ondewo\S2t\TurnDetectionOndewoDeOptions|null $var)
+    {
+        $this->writeOneof(10, $var);
+
+        return $this;
+    }
+
+    /**
+     * The ONDEWO German fusion turn detector: the ONDEWO German text model on vLLM plus acoustic heads on
+     * Triton, combined into one end-of-turn probability.
+     *
+     * Generated from protobuf field <code>.ondewo.s2t.TurnDetectionOndewoDeFusionOptions turn_detection_ondewo_de_fusion_options = 11;</code>
+     * @return \Ondewo\S2t\TurnDetectionOndewoDeFusionOptions|null
+     */
+    public function getTurnDetectionOndewoDeFusionOptions()
+    {
+        return $this->readOneof(11);
+    }
+
+    public function hasTurnDetectionOndewoDeFusionOptions()
+    {
+        return $this->hasOneof(11);
+    }
+
+    /**
+     * The ONDEWO German fusion turn detector: the ONDEWO German text model on vLLM plus acoustic heads on
+     * Triton, combined into one end-of-turn probability.
+     *
+     * Generated from protobuf field <code>.ondewo.s2t.TurnDetectionOndewoDeFusionOptions turn_detection_ondewo_de_fusion_options = 11;</code>
+     * @param \Ondewo\S2t\TurnDetectionOndewoDeFusionOptions $var
+     * @return $this
+     */
+    public function setTurnDetectionOndewoDeFusionOptions(\Ondewo\S2t\TurnDetectionOndewoDeFusionOptions|null $var)
+    {
+        $this->writeOneof(11, $var);
+
+        return $this;
+    }
+
+    /**
+     * pipecat Smart Turn v3.2: audio only, served by Triton.
+     *
+     * Generated from protobuf field <code>.ondewo.s2t.TurnDetectionPipecatSmartTurnOptions turn_detection_pipecat_smart_turn_options = 12;</code>
+     * @return \Ondewo\S2t\TurnDetectionPipecatSmartTurnOptions|null
+     */
+    public function getTurnDetectionPipecatSmartTurnOptions()
+    {
+        return $this->readOneof(12);
+    }
+
+    public function hasTurnDetectionPipecatSmartTurnOptions()
+    {
+        return $this->hasOneof(12);
+    }
+
+    /**
+     * pipecat Smart Turn v3.2: audio only, served by Triton.
+     *
+     * Generated from protobuf field <code>.ondewo.s2t.TurnDetectionPipecatSmartTurnOptions turn_detection_pipecat_smart_turn_options = 12;</code>
+     * @param \Ondewo\S2t\TurnDetectionPipecatSmartTurnOptions $var
+     * @return $this
+     */
+    public function setTurnDetectionPipecatSmartTurnOptions(\Ondewo\S2t\TurnDetectionPipecatSmartTurnOptions|null $var)
+    {
+        $this->writeOneof(12, $var);
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getOneofTurnDetector()
+    {
+        return $this->whichOneof("oneof_turn_detector");
     }
 
 }

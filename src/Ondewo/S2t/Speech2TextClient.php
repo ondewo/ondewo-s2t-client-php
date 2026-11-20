@@ -37,7 +37,7 @@ class Speech2TextClient extends \Grpc\BaseStub {
      * @param \Ondewo\S2t\TranscribeFileRequest $argument input argument
      * @param array $metadata metadata
      * @param array $options call options
-     * @return \Grpc\UnaryCall
+     * @return \Grpc\UnaryCall<\Ondewo\S2t\TranscribeFileResponse>
      */
     public function TranscribeFile(\Ondewo\S2t\TranscribeFileRequest $argument,
       $metadata = [], $options = []) {
@@ -65,7 +65,7 @@ class Speech2TextClient extends \Grpc\BaseStub {
      * @param \Ondewo\S2t\S2tPipelineId $argument input argument
      * @param array $metadata metadata
      * @param array $options call options
-     * @return \Grpc\UnaryCall
+     * @return \Grpc\UnaryCall<\Ondewo\S2t\Speech2TextConfig>
      */
     public function GetS2tPipeline(\Ondewo\S2t\S2tPipelineId $argument,
       $metadata = [], $options = []) {
@@ -80,7 +80,7 @@ class Speech2TextClient extends \Grpc\BaseStub {
      * @param \Ondewo\S2t\Speech2TextConfig $argument input argument
      * @param array $metadata metadata
      * @param array $options call options
-     * @return \Grpc\UnaryCall
+     * @return \Grpc\UnaryCall<\Ondewo\S2t\S2tPipelineId>
      */
     public function CreateS2tPipeline(\Ondewo\S2t\Speech2TextConfig $argument,
       $metadata = [], $options = []) {
@@ -96,7 +96,7 @@ class Speech2TextClient extends \Grpc\BaseStub {
      * @param \Ondewo\S2t\S2tPipelineId $argument input argument
      * @param array $metadata metadata
      * @param array $options call options
-     * @return \Grpc\UnaryCall
+     * @return \Grpc\UnaryCall<\Google\Protobuf\GPBEmpty>
      */
     public function DeleteS2tPipeline(\Ondewo\S2t\S2tPipelineId $argument,
       $metadata = [], $options = []) {
@@ -112,7 +112,7 @@ class Speech2TextClient extends \Grpc\BaseStub {
      * @param \Ondewo\S2t\Speech2TextConfig $argument input argument
      * @param array $metadata metadata
      * @param array $options call options
-     * @return \Grpc\UnaryCall
+     * @return \Grpc\UnaryCall<\Google\Protobuf\GPBEmpty>
      */
     public function UpdateS2tPipeline(\Ondewo\S2t\Speech2TextConfig $argument,
       $metadata = [], $options = []) {
@@ -127,7 +127,7 @@ class Speech2TextClient extends \Grpc\BaseStub {
      * @param \Ondewo\S2t\ListS2tPipelinesRequest $argument input argument
      * @param array $metadata metadata
      * @param array $options call options
-     * @return \Grpc\UnaryCall
+     * @return \Grpc\UnaryCall<\Ondewo\S2t\ListS2tPipelinesResponse>
      */
     public function ListS2tPipelines(\Ondewo\S2t\ListS2tPipelinesRequest $argument,
       $metadata = [], $options = []) {
@@ -142,7 +142,7 @@ class Speech2TextClient extends \Grpc\BaseStub {
      * @param \Ondewo\S2t\ListS2tLanguagesRequest $argument input argument
      * @param array $metadata metadata
      * @param array $options call options
-     * @return \Grpc\UnaryCall
+     * @return \Grpc\UnaryCall<\Ondewo\S2t\ListS2tLanguagesResponse>
      */
     public function ListS2tLanguages(\Ondewo\S2t\ListS2tLanguagesRequest $argument,
       $metadata = [], $options = []) {
@@ -157,7 +157,7 @@ class Speech2TextClient extends \Grpc\BaseStub {
      * @param \Ondewo\S2t\ListS2tDomainsRequest $argument input argument
      * @param array $metadata metadata
      * @param array $options call options
-     * @return \Grpc\UnaryCall
+     * @return \Grpc\UnaryCall<\Ondewo\S2t\ListS2tDomainsResponse>
      */
     public function ListS2tDomains(\Ondewo\S2t\ListS2tDomainsRequest $argument,
       $metadata = [], $options = []) {
@@ -172,7 +172,7 @@ class Speech2TextClient extends \Grpc\BaseStub {
      * @param \Google\Protobuf\GPBEmpty $argument input argument
      * @param array $metadata metadata
      * @param array $options call options
-     * @return \Grpc\UnaryCall
+     * @return \Grpc\UnaryCall<\Ondewo\S2t\S2tGetServiceInfoResponse>
      */
     public function GetServiceInfo(\Google\Protobuf\GPBEmpty $argument,
       $metadata = [], $options = []) {
@@ -188,7 +188,7 @@ class Speech2TextClient extends \Grpc\BaseStub {
      * @param \Ondewo\S2t\ListS2tLanguageModelsRequest $argument input argument
      * @param array $metadata metadata
      * @param array $options call options
-     * @return \Grpc\UnaryCall
+     * @return \Grpc\UnaryCall<\Ondewo\S2t\ListS2tLanguageModelsResponse>
      */
     public function ListS2tLanguageModels(\Ondewo\S2t\ListS2tLanguageModelsRequest $argument,
       $metadata = [], $options = []) {
@@ -203,7 +203,7 @@ class Speech2TextClient extends \Grpc\BaseStub {
      * @param \Ondewo\S2t\CreateUserLanguageModelRequest $argument input argument
      * @param array $metadata metadata
      * @param array $options call options
-     * @return \Grpc\UnaryCall
+     * @return \Grpc\UnaryCall<\Google\Protobuf\GPBEmpty>
      */
     public function CreateUserLanguageModel(\Ondewo\S2t\CreateUserLanguageModelRequest $argument,
       $metadata = [], $options = []) {
@@ -218,7 +218,7 @@ class Speech2TextClient extends \Grpc\BaseStub {
      * @param \Ondewo\S2t\DeleteUserLanguageModelRequest $argument input argument
      * @param array $metadata metadata
      * @param array $options call options
-     * @return \Grpc\UnaryCall
+     * @return \Grpc\UnaryCall<\Google\Protobuf\GPBEmpty>
      */
     public function DeleteUserLanguageModel(\Ondewo\S2t\DeleteUserLanguageModelRequest $argument,
       $metadata = [], $options = []) {
@@ -233,7 +233,7 @@ class Speech2TextClient extends \Grpc\BaseStub {
      * @param \Ondewo\S2t\AddDataToUserLanguageModelRequest $argument input argument
      * @param array $metadata metadata
      * @param array $options call options
-     * @return \Grpc\UnaryCall
+     * @return \Grpc\UnaryCall<\Google\Protobuf\GPBEmpty>
      */
     public function AddDataToUserLanguageModel(\Ondewo\S2t\AddDataToUserLanguageModelRequest $argument,
       $metadata = [], $options = []) {
@@ -248,7 +248,7 @@ class Speech2TextClient extends \Grpc\BaseStub {
      * @param \Ondewo\S2t\TrainUserLanguageModelRequest $argument input argument
      * @param array $metadata metadata
      * @param array $options call options
-     * @return \Grpc\UnaryCall
+     * @return \Grpc\UnaryCall<\Google\Protobuf\GPBEmpty>
      */
     public function TrainUserLanguageModel(\Ondewo\S2t\TrainUserLanguageModelRequest $argument,
       $metadata = [], $options = []) {
@@ -263,7 +263,7 @@ class Speech2TextClient extends \Grpc\BaseStub {
      * @param \Ondewo\S2t\ListS2tNormalizationPipelinesRequest $argument input argument
      * @param array $metadata metadata
      * @param array $options call options
-     * @return \Grpc\UnaryCall
+     * @return \Grpc\UnaryCall<\Ondewo\S2t\ListS2tNormalizationPipelinesResponse>
      */
     public function ListS2tNormalizationPipelines(\Ondewo\S2t\ListS2tNormalizationPipelinesRequest $argument,
       $metadata = [], $options = []) {

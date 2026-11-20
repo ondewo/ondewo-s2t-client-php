@@ -64,7 +64,7 @@ class ListS2tPipelinesResponse extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\Speech2TextConfig[] $var
      * @return $this
      */
-    public function setPipelineConfigs($var)
+    public function setPipelineConfigs(array|RepeatedField $var)
     {
         $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Ondewo\S2t\Speech2TextConfig::class);
         $this->pipeline_configs = $arr;

@@ -15,28 +15,38 @@ export
 #   make update_submodules       # fetch ondewo-s2t-api + ondewo-proto-compiler
 #   make build                   # submodules -> compiler image -> stubs -> version bump
 #   make test                    # manifest validation + php -l + stub inventory + PHPUnit
-#   make ci                      # exactly what .github/workflows/ci.yml runs (no submodules)
+#   make test_via_docker         # the same in the utils image (Dockerfile.utils) - no host php/composer
+#   make ci                      # the checks of ci.yml's php job (no submodules, installs not included)
+#   make ondewo_release          # the WHOLE release, locally - CI never builds, publishes or releases
+#
+# Host requirements: `make build`, `make test_via_docker` and `make ondewo_release` need only make,
+# git, docker, perl and curl - php, composer and gh run in the utils image. The un-suffixed targets
+# (test, packagist_dry_run, publish, push_to_gh, validate_release_credentials) are what runs INSIDE
+# that image; ci.yml runs only the test/lint ones natively.
 #
 # Versioning: ONDEWO_S2T_VERSION (below) is the single source of truth and MUST
 # match the ONDEWO S2T API in major and minor version. `make update_composer_version`
 # propagates it into composer.json - never edit that field by hand.
 #
-# Overriding variables: pass on the command line, e.g. `make build PROTO_COMPILER_IMAGE=...`,
-# or export in the environment. Credentials (GITHUB_GH_TOKEN) are only ever read at runtime
-# and must never be committed.
+# Overriding variables: pass on the command line, e.g. `make build PROTO_COMPILER_IMAGE=...`.
+# Credentials (GITHUB_GH_TOKEN, PACKAGIST_USERNAME, PACKAGIST_API_TOKEN) live ONLY in the
+# ondewo-devops-accounts repository: `make ondewo_release` clones it and hands them to `make release`
+# at runtime. They are never committed here and never stored in GitHub.
 # =====================================================================================
 
 # ---------------- BEFORE RELEASE ----------------
-# 1 - Update Version Number (ONDEWO_S2T_VERSION below)
+# 1 - Update Version Number and API pin (ONDEWO_S2T_VERSION, ONDEWO_S2T_API_GIT_BRANCH below)
 # 2 - Update RELEASE.md
-# 3 - make build
-# -------------- Release Process Steps --------------
-# 1 - Get Credentials from devops-accounts repo
-# 2 - Create Release Branch and push
-# 3 - Create Release Tag and push
-# 4 - GitHub Release
-# 5 - Packagist Release (`make publish`: there is no upload step - Packagist serves the git tag,
+# (ondewo-s2t-api's `make release_all_clients` does both and then runs `make ondewo_release`)
+# -------------- Release Process Steps (`make ondewo_release`, all local) --------------
+# 1 - Write the version into composer.json and README.md, check branch and tag are still free (spc)
+# 2 - Get Credentials from devops-accounts repo
+# 3 - Check the credentials are set, and that the GitHub token can push to this repository
+# 4 - Build, then test and Packagist dry run in the utils image
+# 5 - Commit, push, create Release Branch and Release Tag and push them
+# 6 - Packagist Release (`make publish`: there is no upload step - Packagist serves the git tag,
 #     so the release only validates the package and pings the update API to have it crawled)
+# 7 - GitHub Release, LAST - so an existing GitHub release marks a complete release
 
 ########################################################
 # 		Variables
@@ -44,12 +54,14 @@ export
 
 # MUST BE THE SAME AS THE API in Major and Minor Version Number
 # example: API 2.9.0 --> Client 2.9.X
-ONDEWO_S2T_VERSION=7.5.1
+ONDEWO_S2T_VERSION=7.6.0
 
 # Submodule pins. Both are checked out by `make checkout_defined_submodule_versions`, so the
 # stubs of a release are always reproducible from the two commits recorded here.
-ONDEWO_S2T_API_GIT_BRANCH=tags/7.5.0
-ONDEWO_PROTO_COMPILER_GIT_BRANCH=tags/5.16.0
+ONDEWO_S2T_API_GIT_BRANCH=tags/7.6.0
+# The compiler has to be 5.15.2 or newer: an older image adds "auth/" to composer.json's
+# autoload.classmap and then aborts its own next run on it ('Could not scan for classes inside "auth/"').
+ONDEWO_PROTO_COMPILER_GIT_BRANCH=tags/5.17.0
 
 # Submodule directories - both sit at the repository root, see .gitmodules
 ONDEWO_S2T_API_DIR=ondewo-s2t-api
@@ -58,6 +70,21 @@ ONDEWO_PROTO_COMPILER_DIR=ondewo-proto-compiler
 # The FIXED image tag is the only contract with the proto compiler: `make build_compiler`
 # rebuilds this very tag from the submodule, and `make generate_ondewo_protos` runs it.
 PROTO_COMPILER_IMAGE=ondewo-php-proto-compiler:latest
+
+# Everything that needs php, composer or gh runs in this image, built from Dockerfile.utils - the
+# same scheme as the other ONDEWO clients' utils images.
+IMAGE_UTILS_NAME=ondewo-s2t-client-utils-php:${ONDEWO_S2T_VERSION}
+# The prefix of every utils-image run, followed by extra `-e NAME` flags and ${IMAGE_UTILS_NAME}.
+# The repository is MOUNTED rather than COPYed, so what a target writes (vendor/, build/,
+# tools/vendor/) lands in the working tree; --user keeps it owned by the invoking user, which is why
+# HOME and composer's home and cache are pointed at a path that user can write.
+UTILS_DOCKER_RUN=docker run --rm \
+	--user "$$(id -u):$$(id -g)" \
+	-e HOME=/tmp/home \
+	-e COMPOSER_HOME=/tmp/home/.composer \
+	-e COMPOSER_CACHE_DIR=/tmp/home/.composer/cache \
+	-v "${CURDIR}":/home/ondewo \
+	-w /home/ondewo
 
 # Positional arguments of the compiler image's entrypoint:
 #   <relative_protos_dir>  protoc's -I root INSIDE the input volume -> the api submodule
@@ -87,27 +114,30 @@ COVERAGE_MIN=100
 # the interpreter's command line. Harmless when the driver is xdebug (unknown directive, ignored).
 PHP_COVERAGE_FLAGS=-d pcov.enabled=1 -d pcov.directory=${COVERAGE_SOURCE_DIR}
 
-# You need to setup an access token at https://github.com/settings/tokens - permissions are important
+# Supplied at runtime by run_release_with_devops from ondewo-devops-accounts (account_github.env).
+# It needs push access to this repository, which `release` checks before its first push.
 GITHUB_GH_TOKEN?=ENTER_YOUR_TOKEN_HERE
 
 # Terminate on the ***** separator that delimits release entries, NOT on /\*\*/ - that matched the
 # first markdown **bold** span inside the entry and silently truncated the notes there, with no
-# error from `gh release create`. Same fix as ondewo-nlu-api's and ondewo-nlu-client-python's Makefile.
+# error from `gh release create`. Same fix as ondewo-s2t-api's and ondewo-s2t-client-python's Makefile.
 CURRENT_RELEASE_NOTES=`cat RELEASE.md \
 	| perl -ne 'print if /Release ONDEWO S2T PHP Client ${ONDEWO_S2T_VERSION}/../^\*{5}/'`
 
 GH_REPO="https://github.com/ondewo/ondewo-s2t-client-php"
+# The same repository as GitHub's REST API path, for the token check in validate_release_credentials.
+GH_API_REPO=repos/ondewo/ondewo-s2t-client-php
 DEVOPS_ACCOUNT_GIT="ondewo-devops-accounts"
 DEVOPS_ACCOUNT_DIR="./${DEVOPS_ACCOUNT_GIT}"
 
 # ---------------- PACKAGIST ----------------
 # Packagist has NO upload endpoint. It serves the tree of a git TAG of this very repository, so
 # "publishing" is the tag that `make create_release_tag` already pushes plus a ping that tells
-# Packagist to crawl it - `make publish`. The package itself has to be submitted ONCE by hand
-# before any of this works; see README "Publishing to Packagist".
+# Packagist to crawl it - `make publish`. The package was submitted to Packagist once, before 7.1.0
+# (the update API answers 404 for a package it does not know); no release step is manual.
 # Credentials: the Packagist login name and the token from https://packagist.org/profile/
 # ("Show API token"). Both are read at runtime from the ondewo-devops-accounts repo
-# (account_packagist.env) or from GitHub secrets - never committed.
+# (account_packagist.env) - never committed, never stored in GitHub.
 PACKAGIST_USERNAME?=ENTER_HERE_YOUR_PACKAGIST_USERNAME
 PACKAGIST_API_TOKEN?=ENTER_HERE_YOUR_PACKAGIST_API_TOKEN
 PACKAGIST_PACKAGE=ondewo/s2t-client-php
@@ -120,19 +150,17 @@ PACKAGIST_REPOSITORY_URL=$(subst ",,$(GH_REPO))
 # real publish sends without holding a single secret.
 PACKAGIST_UPDATE_PAYLOAD={"repository":{"url":"$(PACKAGIST_REPOSITORY_URL)"}}
 
-# The release tag under verification. Left EMPTY locally, where `check_version_agreement` derives
-# it from HEAD instead (and finds none on an ordinary branch checkout); the release workflow sets
-# it to ${{ github.ref_name }}, which a tag-triggered run always has, so the tag/version agreement
-# can never be skipped there.
+# The release tag under verification. Left EMPTY on an ordinary checkout, where
+# `check_version_agreement` derives it from HEAD instead (and finds none on a branch); `release` sets
+# it to the tag it is about to create, so the tag/version agreement can never be skipped there.
 RELEASE_TAG?=
 
 # `make` with no target prints the help listing.
 .DEFAULT_GOAL := help
 
-# Define colors globally (reused for [INFO]/[SUCCESS]/[WARN]/[ERROR] log lines in recipes)
+# Define colors globally (reused for [INFO]/[SUCCESS]/[ERROR] log lines in recipes)
 BLUE   := \033[1;34m
 GREEN  := \033[0;32m
-YELLOW := \033[1;33m
 RED    := \033[0;31m
 NC     := \033[0m
 
@@ -172,11 +200,16 @@ TEST: ## Prints some important variables
 ########################################################
 #		Build
 
-build: checkout_defined_submodule_versions build_compiler generate_ondewo_protos fix_generated_ownership update_composer_version ## Build the client: submodules -> compiler image -> stubs -> version bump
+build: checkout_defined_submodule_versions build_compiler generate_ondewo_protos update_composer_version update_readme_version ## Build the client: submodules -> compiler image -> stubs -> version bump
 	@echo "$(GREEN)[SUCCESS]$(NC) ondewo-s2t-client-php ${ONDEWO_S2T_VERSION} built"
 
 build_compiler: ## Build the ondewo-php-proto-compiler docker image from the submodule
 	@echo "$(BLUE)[INFO]$(NC) Building ${PROTO_COMPILER_IMAGE} from ${ONDEWO_PROTO_COMPILER_DIR}/php ..."
+# The image COPYs php/image-data with the mode bits of this checkout, and generate_ondewo_protos runs
+# it as a non-root user. A checkout made under a restrictive umask (077, e.g. while capturing a
+# release log) would land root-owned 0600 in the image: "compile-proto-2-php.sh: Permission denied".
+# a+rX adds only read (and x where some x is already set), which git does not track.
+	chmod -R a+rX ${ONDEWO_PROTO_COMPILER_DIR}/php
 	cd ${ONDEWO_PROTO_COMPILER_DIR}/php && sh build.sh
 	@echo "$(GREEN)[SUCCESS]$(NC) ${PROTO_COMPILER_IMAGE} built"
 
@@ -191,32 +224,47 @@ build_compiler: ## Build the ondewo-php-proto-compiler docker image from the sub
 #	(${ONDEWO_S2T_API_DIR}) and this package's composer.json from there - it merges
 #	that manifest with its own defaults instead of overwriting it.
 # NOTE: hand-written PHP belongs in auth/ at the repository root, NEVER in src/. src/ is
-#	compiler-owned and wiped on every run; the image adds auth/ to the shipped classmap itself.
+#	compiler-owned and wiped on every run; composer.json's autoload.psr-4 maps auth/.
+# NOTE: the container runs as the invoking user (--user), so src/, vendor/ and composer.* come out
+#	owned by you and no sudo chown is needed afterwards. The image was built to run as root, so its
+#	root-owned paths are redirected; the first and the last are load-bearing (verified against compiler
+#	5.15.1, which fails without either), HOME and COMPOSER_HOME only keep composer off root-owned homes:
+#	TEMP_SRC_DIRECTORY   its staging directory, by default /image-data/src ("Permission denied");
+#	COMPOSER_HOME        by default /image-data/composer-home;
+#	COMPOSER_CACHE_READ_ONLY=1  the offline resolution reads the root-owned, pre-warmed
+#	                     /image-data/composer-cache; without the flag composer finds that cache
+#	                     unwritable, "proceeds without cache" and fails on the disabled network.
 generate_ondewo_protos: ## Generate the PHP gRPC client stubs from the .proto definitions into src/
 	@test -d ${ONDEWO_S2T_API_DIR}/${PROTOS_TARGET_SUBDIR} \
 		|| { echo "$(RED)[ERROR]$(NC) '${ONDEWO_S2T_API_DIR}/${PROTOS_TARGET_SUBDIR}' not found - run 'make update_submodules' first"; exit 1; }
 	@echo "$(BLUE)[INFO]$(NC) Generating PHP stubs from ${ONDEWO_S2T_API_DIR}/${PROTOS_TARGET_SUBDIR} ..."
 	docker run --rm \
+		--user "$$(id -u):$$(id -g)" \
+		-e HOME=/tmp/home \
+		-e TEMP_SRC_DIRECTORY=/tmp/compile-src \
+		-e COMPOSER_HOME=/tmp/home/.composer \
+		-e COMPOSER_CACHE_READ_ONLY=1 \
 		-v ${shell pwd}:/input-volume \
 		-v ${shell pwd}:/output-volume \
 		${PROTO_COMPILER_IMAGE} ${ONDEWO_S2T_API_DIR} ${PROTOS_TARGET_SUBDIR}
 	@echo "$(GREEN)[SUCCESS]$(NC) PHP stubs generated in src/"
 
-# The compiler image writes under /image-data and therefore runs as root (unlike the python
-# target, which passes --user), so everything it copies out is root-owned. Non-fatal: a rootless
-# or userns-remapped docker daemon already produces user-owned output and needs no sudo at all.
-fix_generated_ownership: ## Give the generated files back to the current user (they are written by a root container)
-	@echo "$(YELLOW)[WARN]$(NC) The generated files are root-owned - you may be prompted for sudo"
-	@find . -maxdepth 1 -group root | while IFS= read -r f; do \
-		sudo chown -R `id -un`:`id -gn` "$$f" && echo "$(BLUE)[INFO]$(NC) chowned $$f"; \
-	done || true
-
 update_composer_version: ## Set ONDEWO_S2T_VERSION as the `version` field of composer.json
 	@perl -i -pe 's/^(\s*"version":\s*")[0-9]+\.[0-9]+\.[0-9]+(")/$${1}${ONDEWO_S2T_VERSION}$${2}/' composer.json
 	@echo "$(GREEN)[SUCCESS]$(NC) composer.json version set to ${ONDEWO_S2T_VERSION}"
 
+# The README's `composer require ondewo/s2t-client-php:^X.Y` and `"ondewo/s2t-client-php": "^X.Y"`
+# snippets name the minor series of ONDEWO_S2T_VERSION, and its repository tree names the compiler
+# pin. ondewo-s2t-api's release_client rewrites only this Makefile's version and pin lines, so without
+# this the published README would keep recommending the previous minor and citing the previous compiler.
+README_MINOR_SERIES=$(word 1,$(subst ., ,${ONDEWO_S2T_VERSION})).$(word 2,$(subst ., ,${ONDEWO_S2T_VERSION}))
+update_readme_version: ## Set the README's install snippets to the minor series of ONDEWO_S2T_VERSION and its tree to the compiler pin
+	@perl -i -pe 's/(ondewo\/s2t-client-php(?::|":\s*")\^)\d+\.\d+/$${1}${README_MINOR_SERIES}/g' README.md
+	@perl -i -pe 's{(submodule: the compiler images, pinned to )\S+}{$${1}${ONDEWO_PROTO_COMPILER_GIT_BRANCH}}' README.md
+	@echo "$(GREEN)[SUCCESS]$(NC) README.md install snippets set to ^${README_MINOR_SERIES}, compiler pin to ${ONDEWO_PROTO_COMPILER_GIT_BRANCH}"
+
 install_dependencies: ## Resolve and install the composer dependencies of the package (needs network)
-# composer.json declares autoload.classmap ["src/"], and `composer update` aborts with
+# composer.json's autoload.classmap lists "src/", and `composer update` aborts with
 #	'Could not scan for classes inside "src/" which does not appear to be a file nor a folder'
 #	when the stubs have not been generated yet. An empty src/ is harmless - it is compiler-owned
 #	and wiped on the next generation run, and git does not track empty directories.
@@ -237,13 +285,15 @@ clean: ## Remove the composer artifacts, the dev tools and the generated stubs
 
 test: composer_validate packagist_dry_run lint_php check_build coverage ## Validate the manifest, verify the packaging path, syntax-check hand-written PHP, check the stubs against the api submodule and run the covered PHPUnit suite
 
-# What .github/workflows/ci.yml runs, verbatim. It deliberately leaves `check_build` out: that
-# target compares src/ against the ondewo-s2t-api submodule, and CI checks out NO submodules -
-# the stubs are committed, so what CI has to prove is that the COMMITTED tree builds and passes
-# its tests. tests/Generated/GeneratedCodeTest.php carries the submodule-free half of the same
-# assertion (every generated class loads, every descriptor initialises, every expected service
-# client exists) and fails - never skips - when src/ is missing.
-ci: composer_validate packagist_dry_run lint_php coverage ## Run the CI gate locally (no submodules, no docker)
+# The checks .github/workflows/ci.yml's php job runs after its install_dependencies and
+# install_dev_tools steps (which `coverage` needs, so run those two first on a fresh checkout) - a
+# test and lint gate, nothing that packages or publishes (the Packagist dry run is part of `test`,
+# which the local release runs). It deliberately leaves `check_build` out: that target compares src/
+# against the ondewo-s2t-api submodule, and CI checks out NO submodules - the stubs are committed, so
+# what CI has to prove is that the COMMITTED tree passes its tests. tests/Generated/GeneratedCodeTest.php
+# carries the submodule-free half of the same assertion (every generated class loads, every descriptor
+# initialises, every expected service client exists) and fails - never skips - when src/ is missing.
+ci: composer_validate lint_php coverage ## Run the CI gate locally (no submodules, no docker)
 	@echo "$(GREEN)[SUCCESS]$(NC) CI gate passed"
 
 composer_validate: ## Validate composer.json
@@ -254,7 +304,7 @@ composer_validate: ## Validate composer.json
 	composer validate --no-check-publish --no-interaction
 
 lint_php: ## Syntax-check every hand-written PHP file with `php -l` (src/ is generated and skipped)
-	@for dir in auth tests; do \
+	@for dir in auth tests examples; do \
 		[ -d "$$dir" ] || continue; \
 		find "$$dir" -type f -name '*.php' | while IFS= read -r f; do \
 			php -l "$$f" > /dev/null || { echo "$(RED)[ERROR]$(NC) php -l failed: $$f"; exit 1; }; \
@@ -302,6 +352,27 @@ coverage: ## Run the PHPUnit suite with coverage and fail below COVERAGE_MIN% of
 	${COVERAGE_CHECK} ${CLOVER_REPORT} ${COVERAGE_MIN}
 
 ########################################################
+#		Utils docker image
+
+build_utils_docker_image: ## Build the utils docker image (php + ext-grpc/pcov/bcmath, composer, gh) from Dockerfile.utils
+	docker build -f Dockerfile.utils -t ${IMAGE_UTILS_NAME} .
+
+# `make test` needs vendor/ and tools/vendor/, which a fresh container does not have, so the two
+# install targets run first. RELEASE_TAG is forwarded: `release` sets it, because at that point HEAD
+# is still the previous commit - after a release that is the previous release's TAG, and
+# check_version_agreement would otherwise compare that tag with the new ONDEWO_S2T_VERSION.
+test_via_docker: build_utils_docker_image ## Run `make test` (dependencies, Packagist dry run, php -l, check_build, PHPUnit + coverage) in the utils image
+	${UTILS_DOCKER_RUN} ${IMAGE_UTILS_NAME} make install_dependencies install_dev_tools test RELEASE_TAG=${RELEASE_TAG}
+
+packagist_dry_run_via_docker: build_utils_docker_image ## Run the credential-free Packagist dry run in the utils image
+	${UTILS_DOCKER_RUN} ${IMAGE_UTILS_NAME} make packagist_dry_run RELEASE_TAG=${RELEASE_TAG}
+
+# validate_release_credentials in the utils image (the host has no gh). The token goes in by NAME, like
+# release_to_github_via_docker_image below. Builds the image first: this runs before the first push.
+validate_release_credentials_via_docker_image: build_utils_docker_image ## Check in the utils image that GitHub accepts GITHUB_GH_TOKEN and it can push to this repository
+	@${UTILS_DOCKER_RUN} -e GITHUB_GH_TOKEN ${IMAGE_UTILS_NAME} make validate_release_credentials
+
+########################################################
 #		Submodules
 
 update_submodules: ## Initialize and update all submodules
@@ -320,7 +391,7 @@ checkout_defined_submodule_versions: update_submodules ## Check out the submodul
 ########################################################
 #		Release
 
-release: ## Automate the entire release process
+release: ## Automate the entire release process (run through `make ondewo_release`, which supplies the credentials)
 	@echo "$(BLUE)[INFO]$(NC) Start Release"
 # FIRST, before anything is built, committed, branched, tagged or pushed. Both credentials used to
 # be exercised only at the very END of this recipe - GITHUB_GH_TOKEN in login_to_gh, the Packagist
@@ -328,14 +399,24 @@ release: ## Automate the entire release process
 # origin. A missing token therefore left an immovable tag behind, and `spc` then refused every
 # retry because that branch and that tag now exist. A release that cannot reach GitHub or
 # Packagist has to fail while it is still a no-op.
-	make check_gh_credentials
-	make check_packagist_credentials
+	make check_release_credentials
 # Same reasoning for the notes: `gh release create -n ""` publishes an EMPTY release without
 # complaining, and that cannot be discovered after the tag has been pushed either.
 	make check_release_notes
+# Set is not the same as valid: the GitHub token logs gh in exactly as the GitHub release will, and is
+# asked, read-only, whether it may push here (this builds the utils image first). The Packagist pair
+# has no such check - Packagist documents no read-only endpoint that takes the token (its only
+# authenticated calls are update, create and edit, all writes) - so a wrong Packagist token still
+# surfaces only at the ping, after the tag. See README.
+	make validate_release_credentials_via_docker_image
 	make build
 	-make precommit_hooks_run_all_files
 	make check_build
+# The test suite and the Packagist dry run (everything `publish` verifies except the credentials) run
+# here, in the utils image, BEFORE the first push: from `git push` on, a failure leaves a pushed
+# master, release branch and tag behind that `spc` refuses to release again. RELEASE_TAG is the tag
+# this release is about to create - see test_via_docker.
+	make test_via_docker RELEASE_TAG=${ONDEWO_S2T_VERSION}
 	git status
 	git add src
 	git add composer.json
@@ -359,12 +440,15 @@ release: ## Automate the entire release process
 	git push
 	make create_release_branch
 	make create_release_tag
-	make push_to_gh
 # The PHP equivalent of `make push_to_pypi_via_docker` / `make publish_npm_via_docker`: nothing is
 # uploaded, the tag pushed above IS the artifact, and this only tells Packagist to crawl it. It
-# has to run AFTER create_release_tag - Packagist crawls what is on GitHub at that moment.
-	make publish
-	@echo "$(GREEN)[SUCCESS]$(NC) Release Finished - ${PACKAGIST_PACKAGE} ${ONDEWO_S2T_VERSION} is on Packagist"
+# has to run AFTER create_release_tag - Packagist crawls what is on GitHub at that moment. Runs in
+# the utils image that test_via_docker built above.
+	make publish_via_docker_image RELEASE_TAG=${ONDEWO_S2T_VERSION}
+# LAST, so that an existing GitHub release means every step before it succeeded. Utils image too -
+# the host has no gh.
+	make release_to_github_via_docker_image
+	@echo "$(GREEN)[SUCCESS]$(NC) Release Finished - tag ${ONDEWO_S2T_VERSION} pushed, Packagist crawl of ${PACKAGIST_PACKAGE} requested, GitHub release created"
 
 create_release_branch: ## Create Release Branch and push it to origin
 	git checkout -b "release/${ONDEWO_S2T_VERSION}"
@@ -380,14 +464,38 @@ create_release_tag: ## Create Release Tag and push it to origin
 push_to_gh: login_to_gh build_gh_release ## Logs into GitHub CLI and Releases
 	@echo "$(GREEN)[SUCCESS]$(NC) Released to GitHub"
 
+# The token is passed by NAME (`-e GITHUB_GH_TOKEN`): docker copies the value out of the environment
+# (line 1 exports every variable), so it never appears on docker's command line. @ keeps it out of the
+# log even if the flag is ever rewritten to `-e NAME=value`. Uses the image as built - `release` builds
+# it before the first push, and nothing after the tag may fail on an image build.
+release_to_github_via_docker_image: ## Release to GitHub from the utils image (gh auth login + gh release create)
+	@${UTILS_DOCKER_RUN} -e GITHUB_GH_TOKEN ${IMAGE_UTILS_NAME} make push_to_gh
+
 # Never prints the token, only whether it is usable. The EMPTY string has to be rejected next to
-# the placeholder: an unset GitHub secret and `make release GITHUB_GH_TOKEN=` both expand to it,
-# and `gh auth login --with-token` fed an empty line fails long after the tag has been pushed.
+# the placeholder: a devops-accounts file without the line leaves the placeholder, an empty
+# `GITHUB_GH_TOKEN=` line and `make release GITHUB_GH_TOKEN=` expand to the empty string, and
+# `gh auth login --with-token` fed an empty line fails long after the tag has been pushed.
 # Split out of login_to_gh so `release` can run it as its very first step - see the comment there.
 check_gh_credentials: ## Fail unless GITHUB_GH_TOKEN is set
 	@if [ -z "$${GITHUB_GH_TOKEN}" ] || [ "$${GITHUB_GH_TOKEN}" = "ENTER_YOUR_TOKEN_HERE" ]; then \
-		echo "$(RED)[ERROR]$(NC) GITHUB_GH_TOKEN is not set - create one at https://github.com/settings/tokens (devops-accounts: account_github.env)"; exit 1; fi
+		echo "$(RED)[ERROR]$(NC) GITHUB_GH_TOKEN is not set - it comes from ondewo-devops-accounts (account_github.env) through 'make ondewo_release'"; exit 1; fi
 	@echo "$(GREEN)[SUCCESS]$(NC) GITHUB_GH_TOKEN is set"
+
+# The host-side presence check of every credential `release` uses - the first thing it runs.
+check_release_credentials: check_gh_credentials check_packagist_credentials ## Fail unless GITHUB_GH_TOKEN, PACKAGIST_USERNAME and PACKAGIST_API_TOKEN are set
+
+# Runs INSIDE the utils image (validate_release_credentials_via_docker_image), before anything is
+# pushed. First login_to_gh, the very `gh auth login --with-token` the GitHub release runs last: it
+# rejects a revoked or mistyped token (HTTP 401) and a classic token without the `repo` and `read:org`
+# scopes gh requires, and it writes its config only into the throwaway container. Then, read-only,
+# GET /repos/{owner}/{repo}, whose `permissions.push` says whether the token's user may push here; a
+# valid token without write access prints false. @ keeps the value out of the log.
+validate_release_credentials: login_to_gh ## Fail unless GitHub accepts GITHUB_GH_TOKEN and it may push to this repository
+	@push=`GH_TOKEN="$${GITHUB_GH_TOKEN}" gh api ${GH_API_REPO} --jq .permissions.push` \
+		|| { echo "$(RED)[ERROR]$(NC) could not read the permissions of GITHUB_GH_TOKEN on ${GH_API_REPO} (see gh's message above) - on HTTP 401 fix account_github.env in ondewo-devops-accounts"; exit 1; }; \
+	if [ "$$push" != "true" ]; then \
+		echo "$(RED)[ERROR]$(NC) GITHUB_GH_TOKEN is valid but has no push access to ${GH_API_REPO} (permissions.push=$$push)"; exit 1; fi
+	@echo "$(GREEN)[SUCCESS]$(NC) GITHUB_GH_TOKEN is valid and may push to ${GH_API_REPO}"
 
 # Prefixed with @ so the token never reaches the build log. Read as $${GITHUB_GH_TOKEN}, which the
 # shell expands from the exported environment: make would expand $(GITHUB_GH_TOKEN) into the
@@ -422,12 +530,16 @@ build_gh_release: check_release_notes ## Generate Github Release with CLI
 # check_packagist_credentials runs FIRST so a missing token fails in a second rather than after
 # the whole validation pass.
 publish: check_packagist_credentials packagist_dry_run packagist_update ## Validate the package and tell Packagist to crawl the new tag (the PHP equivalent of an upload)
-	@echo "$(GREEN)[SUCCESS]$(NC) ${PACKAGIST_PACKAGE} ${ONDEWO_S2T_VERSION} published - https://packagist.org/packages/${PACKAGIST_PACKAGE}"
+	@echo "$(GREEN)[SUCCESS]$(NC) Packagist crawl of ${PACKAGIST_PACKAGE} ${ONDEWO_S2T_VERSION} requested - it appears on https://packagist.org/packages/${PACKAGIST_PACKAGE} once Packagist has crawled the tag"
 
-# Everything `publish` can check WITHOUT a credential. Wired into `make ci` (and therefore into
-# .github/workflows/ci.yml) so the packaging path is exercised on every single push, not for the
-# first time on release day.
-packagist_dry_run: composer_validate composer_validate_strict check_version_agreement check_packagist_payload ## Credential-free verification of the whole packaging path (runs in CI on every push)
+# `make publish` in the utils image, which has the php and composer the dry run needs. The
+# credentials are passed by NAME, like release_to_github_via_docker_image. Uses the image as built.
+publish_via_docker_image: ## Run `make publish` (dry run + Packagist update ping) in the utils image
+	@${UTILS_DOCKER_RUN} -e PACKAGIST_USERNAME -e PACKAGIST_API_TOKEN ${IMAGE_UTILS_NAME} make publish RELEASE_TAG=${RELEASE_TAG}
+
+# Everything `publish` can check WITHOUT a credential. Part of `make test`, which `release` runs in the
+# utils image before the first push, so a packaging problem fails the release while it is still a no-op.
+packagist_dry_run: composer_validate composer_validate_strict check_version_agreement check_packagist_payload ## Credential-free verification of the whole packaging path (part of `make test`)
 	@echo "$(GREEN)[SUCCESS]$(NC) Packagist dry run passed - ${PACKAGIST_PACKAGE} ${ONDEWO_S2T_VERSION} is publishable"
 
 # `composer validate --strict` reports exactly three warnings here, all of them deliberate and
@@ -444,9 +556,9 @@ packagist_dry_run: composer_validate composer_validate_strict check_version_agre
 # fails on any warning that is NOT one of those three - a newly introduced warning is a real
 # regression and would otherwise drown in `composer validate`'s output.
 # --no-check-lock: composer.lock is deliberately NOT committed here (see .gitignore - this is a
-# library, and the compiler image writes a --no-dev lock of its own). CI validates before it ever
-# installs, so there is no lock to check; a developer who runs this after `make install_dependencies`
-# would otherwise fail on a purely local artifact that is never published.
+# library, and the compiler image writes a --no-dev lock of its own). `make test_via_docker` validates
+# after `make install_dependencies` has written one, and would otherwise fail on a purely local
+# artifact that is never published.
 composer_validate_strict: ## Run `composer validate --strict` and fail on any warning beyond the three deliberate ones
 	@mkdir -p build
 	@composer validate --strict --no-check-lock --no-ansi --no-interaction > build/composer-validate-strict.log 2>&1 || true
@@ -507,14 +619,14 @@ check_packagist_payload: ## Fail unless the Packagist update payload is well-for
 	@echo "$(GREEN)[SUCCESS]$(NC) Packagist update payload points at ${PACKAGIST_REPOSITORY_URL}"
 
 # Never prints either credential, only whether it is usable. Both the placeholder AND the empty
-# string have to be rejected: an unset GitHub secret expands to the EMPTY string, so a check that
-# only looked for the placeholder would let the release workflow post an unauthenticated ping and
-# report success for a package that was never crawled.
+# string have to be rejected: a devops-accounts file without the line leaves the placeholder, an
+# empty `NAME=` line expands to the EMPTY string, and either would post an unauthenticated ping
+# after the tag has already been pushed.
 check_packagist_credentials: ## Fail unless PACKAGIST_USERNAME and PACKAGIST_API_TOKEN are set
 	@if [ -z "$${PACKAGIST_USERNAME}" ] || [ "$${PACKAGIST_USERNAME}" = "ENTER_HERE_YOUR_PACKAGIST_USERNAME" ]; then \
-		echo "$(RED)[ERROR]$(NC) PACKAGIST_USERNAME is not set - it is the Packagist login name (devops-accounts: account_packagist.env, CI: the PACKAGIST_USERNAME secret)"; exit 1; fi
+		echo "$(RED)[ERROR]$(NC) PACKAGIST_USERNAME is not set - it is the Packagist login name (ondewo-devops-accounts: account_packagist.env)"; exit 1; fi
 	@if [ -z "$${PACKAGIST_API_TOKEN}" ] || [ "$${PACKAGIST_API_TOKEN}" = "ENTER_HERE_YOUR_PACKAGIST_API_TOKEN" ]; then \
-		echo "$(RED)[ERROR]$(NC) PACKAGIST_API_TOKEN is not set - create one at https://packagist.org/profile/ 'Show API token' (devops-accounts: account_packagist.env, CI: the PACKAGIST_API_TOKEN secret)"; exit 1; fi
+		echo "$(RED)[ERROR]$(NC) PACKAGIST_API_TOKEN is not set - it is the token from https://packagist.org/profile/ 'Show API token' (ondewo-devops-accounts: account_packagist.env)"; exit 1; fi
 	@echo "$(GREEN)[SUCCESS]$(NC) Packagist credentials are set"
 
 # Prefixed with @ so neither credential reaches the build log, and written against the EXPORTED
@@ -558,25 +670,30 @@ packagist_update: ## Ping the Packagist update API so it crawls the tags of this
 	fi; \
 	grep -q '"status" *: *"success"' build/packagist-update-response.json \
 		|| { echo "$(RED)[ERROR]$(NC) Packagist returned HTTP $$code without status=success - see the response above"; exit 1; }
-	@echo "$(GREEN)[SUCCESS]$(NC) Packagist is crawling ${PACKAGIST_REPOSITORY_URL}"
+	@echo "$(GREEN)[SUCCESS]$(NC) Packagist queued a crawl of ${PACKAGIST_REPOSITORY_URL}"
 
 ########################################################
 #		DEVOPS-ACCOUNTS
 
-ondewo_release: spc clone_devops_accounts run_release_with_devops ## Release with credentials from devops-accounts repo
+# The two update_* targets run BEFORE spc: ondewo-s2t-api's release_client rewrites only this
+# Makefile's version and pin lines, so composer.json (spc Test 3) and the README would otherwise still
+# carry the previous version. `release` commits both files.
+ondewo_release: update_composer_version update_readme_version spc clone_devops_accounts run_release_with_devops ## Release with credentials from devops-accounts repo
 	@rm -rf ${DEVOPS_ACCOUNT_GIT}
 
 clone_devops_accounts: ## Clones devops-accounts repo
 	if [ -d $(DEVOPS_ACCOUNT_GIT) ]; then rm -Rf $(DEVOPS_ACCOUNT_GIT); fi
 	git clone git@bitbucket.org:ondewo/${DEVOPS_ACCOUNT_GIT}.git
 
-# The credentials are exported into the sub-make's ENVIRONMENT. `make release NAME=<value>` would put
-# every value on make's argv, which /proc/<pid>/cmdline shows to every user on the host. The greps
-# are anchored (^NAME=) so a comment line that mentions a variable name cannot corrupt its value.
+# Exactly the three credentials `release` uses, each by an ANCHORED `^NAME=` match. The devops files
+# carry '#' comment lines that mention variable names, so an unanchored grep can return a comment,
+# and a '#' reaching a command line comments out every credential after it.
+# The values are exported into the sub-make's ENVIRONMENT: `make release NAME=<value>` would put every
+# value on make's argv, which /proc/<pid>/cmdline shows to every user on the host.
 run_release_with_devops: ## Gets Credentials from devops-repo and run release command with them
 	@set -a \
-		&& eval "$$(grep -h -E '^GITHUB_GH_TOKEN=' ${DEVOPS_ACCOUNT_DIR}/account_github.env; \
-			grep -h -E '^(PACKAGIST_USERNAME|PACKAGIST_API_TOKEN)=' ${DEVOPS_ACCOUNT_DIR}/account_packagist.env)" \
+		&& eval "$$(grep -hE '^GITHUB_GH_TOKEN=' ${DEVOPS_ACCOUNT_DIR}/account_github.env; \
+			grep -hE '^(PACKAGIST_USERNAME|PACKAGIST_API_TOKEN)=' ${DEVOPS_ACCOUNT_DIR}/account_packagist.env)" \
 		&& set +a \
 		&& $(MAKE) release
 

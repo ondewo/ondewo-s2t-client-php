@@ -24,7 +24,7 @@
   },
   "require": {
     "ext-grpc": "*",
-    "google/protobuf": "4.33.6",
+    "google/protobuf": "5.35.1",
     "grpc/grpc": "1.85.0",
     "php": ">=8.2.0"
   },
@@ -45,5 +45,5 @@
       "Ondewo\\S2t\\Tests\\": "tests/"
     }
   },
-  "version": "7.5.1"
+  "version": "7.6.0"
 }

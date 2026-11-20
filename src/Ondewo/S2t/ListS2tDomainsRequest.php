@@ -64,7 +64,7 @@ class ListS2tDomainsRequest extends \Google\Protobuf\Internal\Message
      * @param string[] $var
      * @return $this
      */
-    public function setLanguages($var)
+    public function setLanguages(array|RepeatedField $var)
     {
         $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::STRING);
         $this->languages = $arr;
@@ -90,7 +90,7 @@ class ListS2tDomainsRequest extends \Google\Protobuf\Internal\Message
      * @param string[] $var
      * @return $this
      */
-    public function setPipelineOwners($var)
+    public function setPipelineOwners(array|RepeatedField $var)
     {
         $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::STRING);
         $this->pipeline_owners = $arr;

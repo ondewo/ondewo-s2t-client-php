@@ -59,6 +59,23 @@ class TranscribeStreamResponse extends \Google\Protobuf\Internal\Message
      * Generated from protobuf field <code>string audio_uuid = 7;</code>
      */
     protected $audio_uuid = '';
+    /**
+     * Whether this response is an end-of-speech candidate. Sent only when the request set
+     * <code>TranscriptionReturnOptions.return_end_of_speech_candidate</code>, only under server-side turn
+     * detection, and only on the chunk where the server found the end of the caller's speech and its turn detector
+     * held the utterance open (not finished, an uncertain hold band, or the minimum endpointing delay), so the final
+     * may follow seconds later. Not sent without turn detection, when the detector judges the turn finished (the
+     * final is then sent on that same chunk), or while the utterance has no text yet. Never set on a final.
+     * At most once per pause: if the caller resumes speaking and pauses again, the next pause may send another one.
+     * With non-final results on, it is a FLAG on the non-final response the server sends for that chunk anyway, so
+     * it is an ordinary partial plus the hint, not an extra response; with non-final results off, the server sends
+     * one non-final response carrying the current text in <code>transcriptions</code>. It is a hint, not a commit:
+     * the utterance's final still follows, or the utterance continues if the caller resumes, and the final text may
+     * differ. Always false otherwise.
+     *
+     * Generated from protobuf field <code>bool end_of_speech_candidate = 9;</code>
+     */
+    protected $end_of_speech_candidate = false;
     protected $oneof_config;
 
     /**
@@ -82,6 +99,19 @@ class TranscribeStreamResponse extends \Google\Protobuf\Internal\Message
      *           is it a start of the utterance
      *     @type string $audio_uuid
      *           id of the transcribed audio file
+     *     @type bool $end_of_speech_candidate
+     *           Whether this response is an end-of-speech candidate. Sent only when the request set
+     *           <code>TranscriptionReturnOptions.return_end_of_speech_candidate</code>, only under server-side turn
+     *           detection, and only on the chunk where the server found the end of the caller's speech and its turn detector
+     *           held the utterance open (not finished, an uncertain hold band, or the minimum endpointing delay), so the final
+     *           may follow seconds later. Not sent without turn detection, when the detector judges the turn finished (the
+     *           final is then sent on that same chunk), or while the utterance has no text yet. Never set on a final.
+     *           At most once per pause: if the caller resumes speaking and pauses again, the next pause may send another one.
+     *           With non-final results on, it is a FLAG on the non-final response the server sends for that chunk anyway, so
+     *           it is an ordinary partial plus the hint, not an extra response; with non-final results off, the server sends
+     *           one non-final response carrying the current text in <code>transcriptions</code>. It is a hint, not a commit:
+     *           the utterance's final still follows, or the utterance continues if the caller resumes, and the final text may
+     *           differ. Always false otherwise.
      *     @type \Ondewo\S2t\TranscribeRequestConfig $config
      *           The configuration for the transcription
      * }
@@ -109,7 +139,7 @@ class TranscribeStreamResponse extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\Transcription[] $var
      * @return $this
      */
-    public function setTranscriptions($var)
+    public function setTranscriptions(array|RepeatedField $var)
     {
         $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Ondewo\S2t\Transcription::class);
         $this->transcriptions = $arr;
@@ -135,9 +165,8 @@ class TranscribeStreamResponse extends \Google\Protobuf\Internal\Message
      * @param float $var
      * @return $this
      */
-    public function setTime($var)
+    public function setTime(float $var)
     {
-        GPBUtil::checkFloat($var);
         $this->time = $var;
 
         return $this;
@@ -163,9 +192,8 @@ class TranscribeStreamResponse extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setFinal($var)
+    public function setFinal(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->final = $var;
 
         return $this;
@@ -189,9 +217,8 @@ class TranscribeStreamResponse extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setReturnAudio($var)
+    public function setReturnAudio(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->return_audio = $var;
 
         return $this;
@@ -215,9 +242,9 @@ class TranscribeStreamResponse extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setAudio($var)
+    public function setAudio(string $var)
     {
-        GPBUtil::checkString($var, False);
+        GPBUtil::checkString($var, false);
         $this->audio = $var;
 
         return $this;
@@ -241,9 +268,8 @@ class TranscribeStreamResponse extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setUtteranceStart($var)
+    public function setUtteranceStart(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->utterance_start = $var;
 
         return $this;
@@ -267,10 +293,57 @@ class TranscribeStreamResponse extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setAudioUuid($var)
+    public function setAudioUuid(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->audio_uuid = $var;
+
+        return $this;
+    }
+
+    /**
+     * Whether this response is an end-of-speech candidate. Sent only when the request set
+     * <code>TranscriptionReturnOptions.return_end_of_speech_candidate</code>, only under server-side turn
+     * detection, and only on the chunk where the server found the end of the caller's speech and its turn detector
+     * held the utterance open (not finished, an uncertain hold band, or the minimum endpointing delay), so the final
+     * may follow seconds later. Not sent without turn detection, when the detector judges the turn finished (the
+     * final is then sent on that same chunk), or while the utterance has no text yet. Never set on a final.
+     * At most once per pause: if the caller resumes speaking and pauses again, the next pause may send another one.
+     * With non-final results on, it is a FLAG on the non-final response the server sends for that chunk anyway, so
+     * it is an ordinary partial plus the hint, not an extra response; with non-final results off, the server sends
+     * one non-final response carrying the current text in <code>transcriptions</code>. It is a hint, not a commit:
+     * the utterance's final still follows, or the utterance continues if the caller resumes, and the final text may
+     * differ. Always false otherwise.
+     *
+     * Generated from protobuf field <code>bool end_of_speech_candidate = 9;</code>
+     * @return bool
+     */
+    public function getEndOfSpeechCandidate()
+    {
+        return $this->end_of_speech_candidate;
+    }
+
+    /**
+     * Whether this response is an end-of-speech candidate. Sent only when the request set
+     * <code>TranscriptionReturnOptions.return_end_of_speech_candidate</code>, only under server-side turn
+     * detection, and only on the chunk where the server found the end of the caller's speech and its turn detector
+     * held the utterance open (not finished, an uncertain hold band, or the minimum endpointing delay), so the final
+     * may follow seconds later. Not sent without turn detection, when the detector judges the turn finished (the
+     * final is then sent on that same chunk), or while the utterance has no text yet. Never set on a final.
+     * At most once per pause: if the caller resumes speaking and pauses again, the next pause may send another one.
+     * With non-final results on, it is a FLAG on the non-final response the server sends for that chunk anyway, so
+     * it is an ordinary partial plus the hint, not an extra response; with non-final results off, the server sends
+     * one non-final response carrying the current text in <code>transcriptions</code>. It is a hint, not a commit:
+     * the utterance's final still follows, or the utterance continues if the caller resumes, and the final text may
+     * differ. Always false otherwise.
+     *
+     * Generated from protobuf field <code>bool end_of_speech_candidate = 9;</code>
+     * @param bool $var
+     * @return $this
+     */
+    public function setEndOfSpeechCandidate(bool $var)
+    {
+        $this->end_of_speech_candidate = $var;
 
         return $this;
     }
@@ -298,9 +371,8 @@ class TranscribeStreamResponse extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\TranscribeRequestConfig $var
      * @return $this
      */
-    public function setConfig($var)
+    public function setConfig(\Ondewo\S2t\TranscribeRequestConfig|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\TranscribeRequestConfig::class);
         $this->writeOneof(8, $var);
 
         return $this;

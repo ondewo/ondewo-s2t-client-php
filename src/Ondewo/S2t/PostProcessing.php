@@ -64,7 +64,7 @@ class PostProcessing extends \Google\Protobuf\Internal\Message
      * @param string[] $var
      * @return $this
      */
-    public function setPipeline($var)
+    public function setPipeline(array|RepeatedField $var)
     {
         $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::STRING);
         $this->pipeline = $arr;
@@ -100,9 +100,8 @@ class PostProcessing extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\PostProcessors $var
      * @return $this
      */
-    public function setPostProcessors($var)
+    public function setPostProcessors(\Ondewo\S2t\PostProcessors|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\PostProcessors::class);
         $this->post_processors = $var;
 
         return $this;

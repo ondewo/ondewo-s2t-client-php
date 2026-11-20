@@ -101,9 +101,9 @@ class Pyannote extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setModelName($var)
+    public function setModelName(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->model_name = $var;
 
         return $this;
@@ -127,7 +127,7 @@ class Pyannote extends \Google\Protobuf\Internal\Message
      * @param int|string $var
      * @return $this
      */
-    public function setMinAudioSize($var)
+    public function setMinAudioSize(int|string $var)
     {
         GPBUtil::checkInt64($var);
         $this->min_audio_size = $var;
@@ -155,9 +155,8 @@ class Pyannote extends \Google\Protobuf\Internal\Message
      * @param float $var
      * @return $this
      */
-    public function setMinDurationOff($var)
+    public function setMinDurationOff(float $var)
     {
-        GPBUtil::checkFloat($var);
         $this->min_duration_off = $var;
 
         return $this;
@@ -183,9 +182,8 @@ class Pyannote extends \Google\Protobuf\Internal\Message
      * @param float $var
      * @return $this
      */
-    public function setMinDurationOn($var)
+    public function setMinDurationOn(float $var)
     {
-        GPBUtil::checkFloat($var);
         $this->min_duration_on = $var;
 
         return $this;
@@ -209,9 +207,9 @@ class Pyannote extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setTritonServerHost($var)
+    public function setTritonServerHost(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->triton_server_host = $var;
 
         return $this;
@@ -235,7 +233,7 @@ class Pyannote extends \Google\Protobuf\Internal\Message
      * @param int|string $var
      * @return $this
      */
-    public function setTritonServerPort($var)
+    public function setTritonServerPort(int|string $var)
     {
         GPBUtil::checkInt64($var);
         $this->triton_server_port = $var;

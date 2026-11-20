@@ -84,9 +84,8 @@ class S2tCloudProviderConfigMicrosoft extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setUseFastTranscriptionApi($var)
+    public function setUseFastTranscriptionApi(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->use_fast_transcription_api = $var;
 
         return $this;
@@ -122,9 +121,8 @@ class S2tCloudProviderConfigMicrosoft extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setUseDetailedOutputFormat($var)
+    public function setUseDetailedOutputFormat(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->use_detailed_output_format = $var;
 
         return $this;

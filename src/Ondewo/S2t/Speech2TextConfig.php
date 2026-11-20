@@ -112,9 +112,9 @@ class Speech2TextConfig extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setId($var)
+    public function setId(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->id = $var;
 
         return $this;
@@ -148,9 +148,8 @@ class Speech2TextConfig extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\S2tDescription $var
      * @return $this
      */
-    public function setDescription($var)
+    public function setDescription(\Ondewo\S2t\S2tDescription|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\S2tDescription::class);
         $this->description = $var;
 
         return $this;
@@ -174,9 +173,8 @@ class Speech2TextConfig extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setActive($var)
+    public function setActive(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->active = $var;
 
         return $this;
@@ -210,9 +208,8 @@ class Speech2TextConfig extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\S2tInference $var
      * @return $this
      */
-    public function setInference($var)
+    public function setInference(\Ondewo\S2t\S2tInference|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\S2tInference::class);
         $this->inference = $var;
 
         return $this;
@@ -246,9 +243,8 @@ class Speech2TextConfig extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\StreamingServer $var
      * @return $this
      */
-    public function setStreamingServer($var)
+    public function setStreamingServer(\Ondewo\S2t\StreamingServer|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\StreamingServer::class);
         $this->streaming_server = $var;
 
         return $this;
@@ -282,9 +278,8 @@ class Speech2TextConfig extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\VoiceActivityDetection $var
      * @return $this
      */
-    public function setVoiceActivityDetection($var)
+    public function setVoiceActivityDetection(\Ondewo\S2t\VoiceActivityDetection|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\VoiceActivityDetection::class);
         $this->voice_activity_detection = $var;
 
         return $this;
@@ -318,9 +313,8 @@ class Speech2TextConfig extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\PostProcessing $var
      * @return $this
      */
-    public function setPostProcessing($var)
+    public function setPostProcessing(\Ondewo\S2t\PostProcessing|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\PostProcessing::class);
         $this->post_processing = $var;
 
         return $this;
@@ -354,9 +348,8 @@ class Speech2TextConfig extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\Logging $var
      * @return $this
      */
-    public function setLogging($var)
+    public function setLogging(\Ondewo\S2t\Logging|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\Logging::class);
         $this->logging = $var;
 
         return $this;

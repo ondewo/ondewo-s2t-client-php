@@ -122,9 +122,8 @@ class WespeakerTsd extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setActive($var)
+    public function setActive(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->active = $var;
 
         return $this;
@@ -148,9 +147,9 @@ class WespeakerTsd extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setModelName($var)
+    public function setModelName(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->model_name = $var;
 
         return $this;
@@ -174,9 +173,9 @@ class WespeakerTsd extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setTritonServerHost($var)
+    public function setTritonServerHost(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->triton_server_host = $var;
 
         return $this;
@@ -200,7 +199,7 @@ class WespeakerTsd extends \Google\Protobuf\Internal\Message
      * @param int|string $var
      * @return $this
      */
-    public function setTritonServerPort($var)
+    public function setTritonServerPort(int|string $var)
     {
         GPBUtil::checkInt64($var);
         $this->triton_server_port = $var;
@@ -242,9 +241,8 @@ class WespeakerTsd extends \Google\Protobuf\Internal\Message
      * @param float $var
      * @return $this
      */
-    public function setSimilarityThreshold($var)
+    public function setSimilarityThreshold(float $var)
     {
-        GPBUtil::checkFloat($var);
         $this->similarity_threshold = $var;
 
         return $this;
@@ -284,9 +282,8 @@ class WespeakerTsd extends \Google\Protobuf\Internal\Message
      * @param float $var
      * @return $this
      */
-    public function setMinAudioLength($var)
+    public function setMinAudioLength(float $var)
     {
-        GPBUtil::checkFloat($var);
         $this->min_audio_length = $var;
 
         return $this;
@@ -312,9 +309,8 @@ class WespeakerTsd extends \Google\Protobuf\Internal\Message
      * @param float $var
      * @return $this
      */
-    public function setReferenceMaxLength($var)
+    public function setReferenceMaxLength(float $var)
     {
-        GPBUtil::checkFloat($var);
         $this->reference_max_length = $var;
 
         return $this;

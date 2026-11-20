@@ -64,9 +64,9 @@ class PtFiles extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setPath($var)
+    public function setPath(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->path = $var;
 
         return $this;
@@ -90,9 +90,9 @@ class PtFiles extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setStep($var)
+    public function setStep(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->step = $var;
 
         return $this;

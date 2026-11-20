@@ -1,16 +1,12 @@
 name: ci
 
-# `branches: ['**']` is NOT decoration: a bare `push:` also matches a TAG push, so every
-# release tag used to run this whole workflow a second time alongside release.yml. Branch
-# pushes and pull requests are what this gate is for; the tagged tree is release.yml's job.
 on:
   push:
     branches: ['**']
   pull_request:
-  workflow_dispatch:
 
-# Nothing here writes to the repository - it only builds and tests the checkout - so drop the
-# default read-write GITHUB_TOKEN down to read. release.yml declares its own.
+# Nothing here writes to the repository - it only tests the checkout - so drop the default
+# read-write GITHUB_TOKEN down to read.
 permissions:
   contents: read
 
@@ -20,8 +16,8 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.ref != 'refs/heads/master' }}
 
-# The generated stubs under src/ are COMMITTED (see .gitignore), so this workflow builds and tests
-# the tree as it stands: no docker image, no proto compiler, no submodules. Regenerating the stubs
+# The generated stubs under src/ are COMMITTED (see .gitignore), so this workflow tests the tree as
+# it stands: no docker image, no proto compiler, no submodules. Regenerating the stubs
 # from ondewo-s2t-api is a separate integration concern driven by `make build` on a developer
 # machine.
 #
@@ -82,24 +78,17 @@ jobs:
           composer --version
 
       # Deliberately NOT --strict: the `version` field the release targets bump is a
-      # strict-mode warning that --strict turns into a failure (rc 1). The dry run below runs
-      # --strict anyway, with the deliberate warnings enumerated.
+      # strict-mode warning that --strict turns into a failure (rc 1). The release's Packagist dry
+      # run (`make test`, run locally by `make release`) runs --strict with the deliberate
+      # warnings enumerated.
       - name: Validate composer.json
         run: make composer_validate
-
-      # The credential-free half of `make publish`: composer validate --strict with the three
-      # deliberate warnings enumerated, the agreement between ONDEWO_S2T_VERSION, composer.json,
-      # RELEASE.md and (on a tag) the tag itself, and the exact update payload the real publish
-      # POSTs. It holds no secret and touches no network, so the packaging path is exercised on
-      # every push instead of for the first time on release day.
-      - name: Packagist publishing dry run (no credentials)
-        run: make packagist_dry_run
 
       - name: Syntax-check the hand-written PHP sources
         run: make lint_php
 
-      # This is the PHP "build": composer generates the class map over all 78 committed stubs,
-      # which is also what surfaces a duplicate class declaration.
+      # composer generates the class map over all 838 committed stubs, which is also what
+      # surfaces a duplicate class declaration.
       - name: Install the package dependencies
         run: make install_dependencies
 

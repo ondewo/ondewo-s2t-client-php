@@ -80,9 +80,9 @@ class Whisper extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setModelPath($var)
+    public function setModelPath(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->model_path = $var;
 
         return $this;
@@ -106,9 +106,8 @@ class Whisper extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setUseGpu($var)
+    public function setUseGpu(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->use_gpu = $var;
 
         return $this;
@@ -132,9 +131,9 @@ class Whisper extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setLanguage($var)
+    public function setLanguage(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->language = $var;
 
         return $this;
@@ -158,9 +157,9 @@ class Whisper extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setTask($var)
+    public function setTask(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->task = $var;
 
         return $this;

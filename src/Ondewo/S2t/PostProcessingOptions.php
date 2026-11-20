@@ -82,9 +82,8 @@ class PostProcessingOptions extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setSpellingCorrection($var)
+    public function setSpellingCorrection(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->spelling_correction = $var;
 
         return $this;
@@ -108,9 +107,8 @@ class PostProcessingOptions extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setNormalize($var)
+    public function setNormalize(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->normalize = $var;
 
         return $this;
@@ -146,9 +144,8 @@ class PostProcessingOptions extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\PostProcessing $var
      * @return $this
      */
-    public function setConfig($var)
+    public function setConfig(\Ondewo\S2t\PostProcessing|null $var)
     {
-        GPBUtil::checkMessage($var, \Ondewo\S2t\PostProcessing::class);
         $this->config = $var;
 
         return $this;
@@ -172,9 +169,8 @@ class PostProcessingOptions extends \Google\Protobuf\Internal\Message
      * @param bool $var
      * @return $this
      */
-    public function setLlmPostProcessing($var)
+    public function setLlmPostProcessing(bool $var)
     {
-        GPBUtil::checkBool($var);
         $this->llm_post_processing = $var;
 
         return $this;

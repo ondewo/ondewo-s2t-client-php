@@ -68,7 +68,7 @@ class ListS2tLanguageModelsResponse extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\LanguageModelPipelineId[] $var
      * @return $this
      */
-    public function setLmPipelineIds($var)
+    public function setLmPipelineIds(array|RepeatedField $var)
     {
         $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Ondewo\S2t\LanguageModelPipelineId::class);
         $this->lm_pipeline_ids = $arr;

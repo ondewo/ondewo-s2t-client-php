@@ -94,9 +94,8 @@ class WordDetail extends \Google\Protobuf\Internal\Message
      * @param float $var
      * @return $this
      */
-    public function setStartTime($var)
+    public function setStartTime(float $var)
     {
-        GPBUtil::checkFloat($var);
         $this->start_time = $var;
 
         return $this;
@@ -122,9 +121,8 @@ class WordDetail extends \Google\Protobuf\Internal\Message
      * @param float $var
      * @return $this
      */
-    public function setEndTime($var)
+    public function setEndTime(float $var)
     {
-        GPBUtil::checkFloat($var);
         $this->end_time = $var;
 
         return $this;
@@ -148,9 +146,9 @@ class WordDetail extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setWord($var)
+    public function setWord(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->word = $var;
 
         return $this;
@@ -174,9 +172,8 @@ class WordDetail extends \Google\Protobuf\Internal\Message
      * @param float $var
      * @return $this
      */
-    public function setConfidence($var)
+    public function setConfidence(float $var)
     {
-        GPBUtil::checkFloat($var);
         $this->confidence = $var;
 
         return $this;
@@ -200,7 +197,7 @@ class WordDetail extends \Google\Protobuf\Internal\Message
      * @param \Ondewo\S2t\WordAlternative[] $var
      * @return $this
      */
-    public function setWordAlternatives($var)
+    public function setWordAlternatives(array|RepeatedField $var)
     {
         $arr = GPBUtil::checkRepeatedField($var, \Google\Protobuf\Internal\GPBType::MESSAGE, \Ondewo\S2t\WordAlternative::class);
         $this->word_alternatives = $arr;

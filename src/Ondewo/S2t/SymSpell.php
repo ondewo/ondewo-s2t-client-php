@@ -74,9 +74,9 @@ class SymSpell extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setDictPath($var)
+    public function setDictPath(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->dict_path = $var;
 
         return $this;
@@ -102,7 +102,7 @@ class SymSpell extends \Google\Protobuf\Internal\Message
      * @param int|string $var
      * @return $this
      */
-    public function setMaxDictionaryEditDistance($var)
+    public function setMaxDictionaryEditDistance(int|string $var)
     {
         GPBUtil::checkInt64($var);
         $this->max_dictionary_edit_distance = $var;
@@ -128,7 +128,7 @@ class SymSpell extends \Google\Protobuf\Internal\Message
      * @param int|string $var
      * @return $this
      */
-    public function setPrefixLength($var)
+    public function setPrefixLength(int|string $var)
     {
         GPBUtil::checkInt64($var);
         $this->prefix_length = $var;

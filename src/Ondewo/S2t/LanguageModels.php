@@ -88,9 +88,9 @@ class LanguageModels extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setPath($var)
+    public function setPath(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->path = $var;
 
         return $this;
@@ -114,7 +114,7 @@ class LanguageModels extends \Google\Protobuf\Internal\Message
      * @param int|string $var
      * @return $this
      */
-    public function setBeamSize($var)
+    public function setBeamSize(int|string $var)
     {
         GPBUtil::checkInt64($var);
         $this->beam_size = $var;
@@ -140,9 +140,9 @@ class LanguageModels extends \Google\Protobuf\Internal\Message
      * @param string $var
      * @return $this
      */
-    public function setDefaultLm($var)
+    public function setDefaultLm(string $var)
     {
-        GPBUtil::checkString($var, True);
+        GPBUtil::checkString($var, true);
         $this->default_lm = $var;
 
         return $this;
@@ -166,9 +166,8 @@ class LanguageModels extends \Google\Protobuf\Internal\Message
      * @param float $var
      * @return $this
      */
-    public function setBeamSearchScorerAlpha($var)
+    public function setBeamSearchScorerAlpha(float $var)
     {
-        GPBUtil::checkFloat($var);
         $this->beam_search_scorer_alpha = $var;
 
         return $this;
@@ -192,9 +191,8 @@ class LanguageModels extends \Google\Protobuf\Internal\Message
      * @param float $var
      * @return $this
      */
-    public function setBeamSearchScorerBeta($var)
+    public function setBeamSearchScorerBeta(float $var)
     {
-        GPBUtil::checkFloat($var);
         $this->beam_search_scorer_beta = $var;
 
         return $this;
